@@ -1,7 +1,19 @@
 # 🍿 CineVerse
 
-Aplicação de estudo para catálogo de filmes e séries, construída com **React (Vite)** no frontend e **FastAPI** no backend.  
+Projeto final do NExT2025
+
+Catálogo de filmes e séries construído com **React (Vite)** no frontend e **FastAPI** no backend.  
 A aplicação roda via **Docker Compose**, facilitando o setup e execução.
+
+**Time:**
+- André de Queiroz Correia
+- Eduardo José Chagas Coelho
+- Gean Carlo Dantas de Brito
+- Ricardo Rodrigues Rocha
+- Victor Julius Bezerra
+
+**Mentor:**
+- Caíque de Araújo Monteiro
 
 ---
 
