@@ -1,4 +1,4 @@
-# 🍿 PopCornHub
+# 🍿 CineVerse
 
 Aplicação de estudo para catálogo de filmes e séries, construída com **React (Vite)** no frontend e **FastAPI** no backend.  
 A aplicação roda via **Docker Compose**, facilitando o setup e execução.
@@ -15,7 +15,7 @@ A aplicação roda via **Docker Compose**, facilitando o setup e execução.
 
 ## 📂 Estrutura do projeto
 
-PopCornHub/ \
+CineVerse/ \
 └─ backend/ # FastAPI \
 └─ frontend/ # React + Vite
 
@@ -30,8 +30,8 @@ PopCornHub/ \
 
 1. Clone este repositório:
    ```bash
-   git clone https://github.com/seu-usuario/PopCornHub.git
-   cd PopCornHub
+   git clone https://github.com/caiquemonteiro/CineVerse.git
+   cd CineVerse
 
 2. Suba os containers:
    ```bash
