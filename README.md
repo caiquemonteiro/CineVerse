@@ -9,6 +9,7 @@ A aplicação roda via **Docker Compose**, facilitando o setup e execução.
 - André de Queiroz Correia
 - Eduardo José Chagas Coelho
 - Gean Carlo Dantas de Brito
+- Ivandro Henrique Arruda de Lima
 - Ricardo Rodrigues Rocha
 - Victor Julius Bezerra
 
