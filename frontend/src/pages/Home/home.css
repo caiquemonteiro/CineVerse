@@ -1,0 +1,17 @@
+.home-container {
+  width: 100vw; 
+  min-height: 100vh;
+  background-color: #111c1f;
+  color: #fff;
+}
+
+.home-content h2 {
+  position: absolute;
+  top: 105px;
+  left: 50px;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 500;
+  font-size: 30px;
+  margin: 0;
+}
+
