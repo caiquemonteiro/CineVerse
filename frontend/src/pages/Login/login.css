@@ -1,5 +1,3 @@
-
-/* Fundo escuro */
 .login-container {
   height: 100vh;
   width: 100vw;   
@@ -9,22 +7,19 @@
   background-color: #111c1f;
 }
 
-/* Caixa do login */
 .login-box {
   text-align: center;
   width: 100%;
   max-width: 320px;
 }
 
-/* Logo */
 .login-logo {
   width: 200px;
   margin-bottom: 10px;
 }
 
-/* Botão vermelho */
 .login-button {
-  background-color: #d32f2f !important; /* vermelho */
-  border: none !important; /* !important é para sobrescrever o estilo do ant */
+  background-color: #d32f2f !important;
+  border: none !important;
   border-radius: 6px;
 }
