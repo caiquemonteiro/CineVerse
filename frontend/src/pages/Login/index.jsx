@@ -1,13 +1,13 @@
-import { Form, Input, Button } from "antd"; // componentes da biblioteca
-import { UserOutlined, LockOutlined } from "@ant-design/icons"; // icones do usuário e cadeado da senha
+import { Form, Input, Button } from "antd";
+import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import "./login.css";
 import logo from "../../assets/logo.svg";
 
 export default function LoginPage() {
 
   return (
-    <div className="login-container">
-      <div className="login-box">
+    <article className="login-container">
+      <section className="login-box">
 
         <img src={logo} alt="CineVerse Logo" className="login-logo" />
 
@@ -42,8 +42,8 @@ export default function LoginPage() {
 
         </Form>
 
-      </div>
-    </div>
+      </section>
+    </article>
   );
 
 }
