@@ -2,8 +2,10 @@ import { Form, Input, Button } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import "./login.css";
 import logo from "../../assets/logo.svg";
+import { useNavigate } from "react-router-dom";
 
 export default function LoginPage() {
+  const navigate = useNavigate();
 
   return (
     <article className="login-container">
@@ -35,6 +37,7 @@ export default function LoginPage() {
               block
               className="login-button"
               size="large"
+              onClick={() => navigate('/home')}
             >
               Entrar
             </Button>
