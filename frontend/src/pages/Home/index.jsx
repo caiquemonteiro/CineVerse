@@ -1,9 +1,9 @@
 import { Row, Col } from "antd";
 import Header from "../../components/Header";
 import "./home.css";
+import { useNavigate } from "react-router-dom";
 
-export default function HomePage() {
-      const movies = [
+const movies = [
     {
       adult: false,
       backdrop_path: "/zcwEuzsG2vEZkKyScc63wWZf8Yv.jpg",
@@ -398,6 +398,9 @@ export default function HomePage() {
     }
   ]
 
+export default function HomePage() {
+  const navigate = useNavigate();
+
   return (
     <div className="home-container">
       <Header />   
@@ -410,8 +413,12 @@ export default function HomePage() {
             
             <Col span={3} key={movie.id}>
 
-              <img className="movie-cover" src={movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
-              : "https://via.placeholder.com/500x750?text=Imagem+indisponível"} />
+              <img 
+                className="movie-cover" 
+                src={movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+                  : "https://via.placeholder.com/500x750?text=Imagem+indisponível"} 
+                onClick={()=>navigate(`/movie/${movie.id}`)} 
+              />
 
             </Col>
           ))}
