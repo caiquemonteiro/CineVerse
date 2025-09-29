@@ -1,12 +1,10 @@
 import React from 'react'
-// import LoginPage from './pages/Login'
-import HomePage from "./pages/Home"; 
+import LoginPage from './pages/Login'
 
 function App() {
-  // return (
-  //   <LoginPage />
-  // )
-  return <HomePage />;
+  return (
+    <LoginPage />
+  )
 
 }
 
