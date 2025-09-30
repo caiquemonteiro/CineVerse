@@ -9,16 +9,7 @@
   height: 40px;
 }
 
-.header-left {
-  display: flex;
-  align-items: center;
-}
-
-.header-logo {
-  width: 137px;
-}
-
-.header-center {
+.input {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
@@ -28,30 +19,25 @@
   justify-content: center;
 }
 
-.header-right {
+.user-info {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.header-avatar {
+.user-avatar {
   background-color: #FFD8BF; 
   color: #FA541C; 
   font-weight: 500;
 }
 
-.header-username {
+.username {
   font-family: 'Roboto', sans-serif;
   font-size: 14px;
   font-weight: 500;
 }
 
-.header-separator {
-  color: #FFFFFF; 
-  margin: 0 px; 
-}
-
-.header-logout {
+.logout-button {
   display: flex;
   align-items: center;
   color: #FF383C; 
