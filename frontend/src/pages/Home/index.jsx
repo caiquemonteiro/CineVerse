@@ -1,7 +1,7 @@
 import { Row, Col } from "antd";
+import { useNavigate } from "react-router-dom";
 import Header from "../../components/Header";
 import "./home.css";
-import { useNavigate } from "react-router-dom";
 
 const movies = [
     {
@@ -411,7 +411,13 @@ export default function HomePage() {
         <Row gutter={[20, 10]}>
           {movies.map((movie) => (
             
-            <Col span={3} key={movie.id}>
+            <Col key={movie.id}
+              xs={12}
+              sm={8}
+              md={6}
+              lg={4}
+              xl={3}
+            >
 
               <img 
                 className="movie-cover" 

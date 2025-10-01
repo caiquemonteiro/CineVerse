@@ -1,18 +1,15 @@
 .header {
-  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
   background-color: #111c1f;
-  padding: 10px 50px;
+  padding: 10px 50px; 
   color: white;
-  height: 40px;
+  height: 40px; 
 }
 
 .input {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
+  flex-grow: 1; 
   width: 100%;
   max-width: 300px;
   display: flex;
@@ -23,6 +20,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
+  flex-shrink: 0; 
 }
 
 .user-avatar {
