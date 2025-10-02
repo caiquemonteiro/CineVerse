@@ -10,7 +10,7 @@ function Header() {
       <img src={logo} alt="CineVerse" />
       
       <Input
-        className="input"
+        className="search-bar"
         placeholder="Pesquisar..."
         prefix={<SearchOutlined />}
       />
@@ -20,7 +20,7 @@ function Header() {
         <span className="username">João da Silva</span>
         <Divider type="vertical" style={{borderColor: "lightgray"}} />
         <Button className="logout-button" type="text">
-            <LogoutOutlined />
+          <LogoutOutlined />
         </Button>
       </div>
 
