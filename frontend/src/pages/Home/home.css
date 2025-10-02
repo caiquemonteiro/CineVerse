@@ -1,9 +1,8 @@
 .home-container {
-  width: 100%; 
+  width: 100vw; 
   min-height: 100vh;
   background-color: #111c1f;
   color: #fff;
-  overflow-x: hidden; 
 }
 
 .home-content {
@@ -23,6 +22,7 @@
 .movie-cover {
   border-radius: 8px; 
   width: 100% ; 
+  object-fit: cover;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   box-shadow: 0 4px 8px rgba(67, 67, 67, 0.1);
 }
@@ -31,4 +31,15 @@
   transform: translateY(-5px); 
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
   cursor: pointer
+}
+
+.ant-row {
+  width: 100% !important;
+}
+
+.spin {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
 }
