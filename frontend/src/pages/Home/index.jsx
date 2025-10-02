@@ -33,17 +33,10 @@ export default function HomePage() {
         <h2>Filmes em alta</h2>
         {movies.length > 0 ?
 
-          <Row gutter={[12, 10]}>
+          <Row gutter={[15, 15]}>
             {movies.map((movie) => (
               
-              <Col key={movie.id}
-                xs={12}
-                sm={8}
-                md={6}
-                lg={4}
-                xl={3}
-              >
-
+              <Col key={movie.id} xs={12} sm={6} md={4} lg={3} xl={2}>
                 <img 
                   className="movie-cover" 
                   src={movie.poster_path 

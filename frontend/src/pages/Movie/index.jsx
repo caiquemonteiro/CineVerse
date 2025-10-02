@@ -2,7 +2,7 @@ import { useParams } from "react-router-dom";
 import { Tag, Button, Modal, Flex, Rate, Input, Divider } from "antd";
 import { useState } from 'react';
 import Header from "../../components/Header";
-import IMDb from "../../assets/IMDb.PNG";
+import IMDb from "../../assets/IMDb.png";
 import ReviewComponent from "../../components/Review/index.jsx";
 import { EditOutlined, HeartFilled  } from "@ant-design/icons";
 import "./movie.css";
