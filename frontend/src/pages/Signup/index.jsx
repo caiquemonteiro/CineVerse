@@ -1,12 +1,12 @@
 import { Form, Input, Button, Typography } from "antd";
-import { UserOutlined, LockOutlined } from "@ant-design/icons";
-import "./login.css";
+import { UserOutlined, LockOutlined, MailOutlined } from "@ant-design/icons";
+import "./signup.css";
 import logo from "../../assets/logo.svg";
 import { useNavigate } from "react-router-dom";
 
 const { Text } = Typography;
 
-export default function LoginPage() {
+export default function SignupPage() {
   const navigate = useNavigate();
 
   return (
@@ -16,10 +16,18 @@ export default function LoginPage() {
         <img src={logo} alt="CineVerse Logo" className="login-logo" />
 
         <Form name="login_form">
+
+          <Form.Item name="user">
+            <Input
+              prefix={<UserOutlined />}
+              placeholder="Nome"
+              size="large"
+            />
+          </Form.Item>
           
           <Form.Item name="email">
             <Input
-              prefix={<UserOutlined />}
+              prefix={<MailOutlined />}
               placeholder="E-mail"
               size="large"
             />
@@ -37,21 +45,20 @@ export default function LoginPage() {
             <Button
               type="primary"
               block
-              className="login-button"
               size="large"
-              onClick={() => navigate('/home')}
+              onClick={() => navigate('/')}
             >
-              Entrar
+              Criar Conta
             </Button>
           </Form.Item>
-
-          <div className="signup">
-            <Text>Ainda não possui conta?</Text>
+            
+          <div className="signin">
+            <Text>Já possui uma conta?</Text>
             <Button
               type="link"
-              onClick={() => navigate('/signup')} 
+              onClick={() => navigate('/')} 
             >
-              Cadastre-se
+              Fazer login
             </Button>
           </div>
 
