@@ -3,5 +3,4 @@ uvicorn
 sqlalchemy
 pymysql
 pydantic
-email-validator
-dotenv
+python-dotenv

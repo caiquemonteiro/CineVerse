@@ -1,7 +1,8 @@
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from typing import List
+from datetime import date
 
 from .database import engine, SessionLocal
 from . import models, schemas
@@ -37,15 +38,14 @@ def criar_usuario(payload: schemas.UsuarioCreate, db: Session = Depends(get_db))
         raise HTTPException(status_code=400, detail="E-mail já cadastrado.")
     
     data = payload.model_dump()
-    if not data.get("senha"):              
-        data["senha"] = "12345"            
+    data["senha"] = "12345"     # senha padrão
 
-    obj = models.Usuario(**payload.model_dump())
+    obj = models.Usuario(**data)
     try:
         db.add(obj)
         db.commit()
         db.refresh(obj)
-    except Exception as e:
+    except Exception:
         db.rollback()
         raise HTTPException(status_code=500, detail="Erro ao salvar usuário.")
     return obj
@@ -54,20 +54,33 @@ def criar_usuario(payload: schemas.UsuarioCreate, db: Session = Depends(get_db))
 def listar_usuarios(db: Session = Depends(get_db)):
     return db.query(models.Usuario).all()
 
+# LOGIN bem simples
+@app.post("/login")
+def login(email: str, senha: str, db: Session = Depends(get_db)):
+    user = db.query(models.Usuario).filter(models.Usuario.email == email).first()
+    if not user or senha != "12345":   
+        raise HTTPException(status_code=400, detail="E-mail ou senha inválidos.")
+    return {"message": "Login realizado com sucesso!", "usuario_id": user.id, "nome": user.nome}
+
 #  AVALIAÇÕES 
 @app.post("/avaliacoes", response_model=schemas.AvaliacaoOut)
 def criar_avaliacao(payload: schemas.AvaliacaoCreate, db: Session = Depends(get_db)):
-    obj = models.Avaliacao(**payload.model_dump())
+    data = payload.model_dump()
+    data["data"] = date.today()   
+
+    obj = models.Avaliacao(**data)
     try:
         db.add(obj)
         db.commit()
         db.refresh(obj)
-    except Exception as e:
+    except Exception:
         db.rollback()
         raise HTTPException(status_code=500, detail="Erro ao salvar avaliação.")
     return obj
 
 @app.get("/avaliacoes", response_model=List[schemas.AvaliacaoOut])
 def listar_avaliacoes(db: Session = Depends(get_db)):
-    return db.query(models.Avaliacao).all()
+    avals = db.query(models.Avaliacao).options(joinedload(models.Avaliacao.usuario)).all()
+    return avals
+
 
