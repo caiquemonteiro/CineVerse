@@ -1,27 +1,17 @@
-.login-container {
-  height: 100vh;
-  width: 100vw;   
+.login-container {   
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #111c1f;
 }
 
 .login-box {
   text-align: center;
-  width: 100%;
   max-width: 320px;
 }
 
 .login-logo {
   width: 200px;
   margin-bottom: 10px;
-}
-
-.login-button {
-  background-color: #d32f2f !important;
-  border: none !important;
-  border-radius: 6px;
 }
 
 .signin .ant-typography {

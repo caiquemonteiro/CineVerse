@@ -45,7 +45,6 @@ export default function SignupPage() {
             <Button
               type="primary"
               block
-              className="login-button"
               size="large"
               onClick={() => navigate('/')}
             >
