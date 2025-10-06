@@ -1,0 +1,105 @@
+.movie-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 40px;
+  max-width: 900px;
+  padding: 50px 0;
+  margin: auto;
+}
+
+.movie {
+  width: 200px ; 
+  height: 300px;
+  border-radius: 8px; 
+}
+
+.movie-title {
+  font-size: 30px;
+  margin: 0;
+}
+
+.movie-year {
+  color: #555555;
+  font-weight: 500;
+}
+
+.overview {
+  font-family: 'Roboto', sans-serif;
+  font-size: 16px;
+  color: #FFFFFF;
+  text-align: justify; 
+}
+
+.genre-tag {
+  border: 1px solid #FF3B30 !important;
+  color: #FF3B30 !important;
+  background: transparent !important;
+}
+
+.ratings {
+  display: flex;
+  gap: 20px;
+  font-size: 16px;
+  margin-top: 25px;
+  align-items: center;
+}
+
+.heart-score {
+  font-family: 'Roboto', sans-serif;
+  font-size: 20px;
+  color: #FFFFFF;
+}
+
+.imdb-score {
+  font-family: 'Roboto', sans-serif;
+  font-size: 20px;
+  color: #FFFFFF;
+}
+
+.reviews-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.review-button {
+  padding: 8px 16px !important;
+  transition: all 0.3s ease !important;
+}
+
+.review-button:hover {
+  transform: translateY(-1px);
+}
+
+.custom-heart-rate .ant-rate-star-full {
+  color: #FF3B30; 
+}
+
+.custom-heart-rate .ant-rate-star-half {
+  color: #FF3B30; 
+}
+
+.custom-modal .ant-modal-footer .ant-btn-primary {
+  background-color: #FF3B30; 
+  border-color: #FF3B30;     
+  color: #fff;               
+}
+
+.custom-modal .ant-modal-footer .ant-btn-primary:hover {
+  background-color: #ff0400;
+  border-color: #ff0400;
+}
+
+
+@media (max-width: 768px) {
+  .movie-content {
+    flex-direction: column; 
+    align-items: center;  
+    padding: 40px 20px 20px; 
+  }
+
+  .movie-title {
+    text-align: center; 
+  }
+}
