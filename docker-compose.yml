@@ -27,7 +27,7 @@ services:
     image: mysql:8.0
     container_name: cine-verse-db
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"] # Comando para verificar se o MySQL está rodando
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u$$MYSQL_USER -p$$MYSQL_PASSWORD"]
       timeout: 5s
       retries: 10 # Tentar 10 vezes
       interval: 10s # A cada 10 segundos
