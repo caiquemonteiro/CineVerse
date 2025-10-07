@@ -5,7 +5,7 @@ from datetime import date
 class UsuarioCreate(BaseModel):
     nome: str
     email: str
-    senha: Optional[str] = None  
+    senha: str
 
 class UsuarioOut(BaseModel):
     id: int
@@ -13,13 +13,17 @@ class UsuarioOut(BaseModel):
     email: str   
     model_config = ConfigDict(from_attributes=True)
 
+class UsuarioPublic(BaseModel):   # acrescentei essa classe para interagir com AvalicaoOut e puxar o nome do usuario que fez o comentario
+    id: int
+    nome: str
+    model_config = ConfigDict(from_attributes=True)
 
 class AvaliacaoCreate(BaseModel):
     codfilme: int
-    nota: Optional[float] = None
-    comentario: Optional[str] = None
-    data: Optional[date] = None
-    usuario_id: Optional[int] = None
+    nota: float
+    comentario: str
+    usuario_id: int
+    data: date | None = None
 
     @field_validator("usuario_id", mode="before")
     @classmethod
@@ -31,10 +35,12 @@ class AvaliacaoCreate(BaseModel):
 class AvaliacaoOut(BaseModel):
     id: int
     codfilme: int
-    nota: Optional[float] = None
-    comentario: Optional[str] = None
-    data: Optional[date] = None
-    usuario_id: Optional[int] = None
+    nota: float
+    comentario: str
+    data: date
+    usuario_id: int
+    usuario: Optional[UsuarioPublic] = None
     model_config = ConfigDict(from_attributes=True)
 
+    
 
