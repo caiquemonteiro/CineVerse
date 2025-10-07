@@ -1,15 +1,10 @@
-.movie-container {
-  width: 100%; 
-  min-height: 100vh;
-  background-color: #111c1f;
-  color: #FFFFFF;
-}
-
 .movie-content {
   display: flex;
   align-items: flex-start;
-  gap: 40px;  
-  padding: 80px 200px 50px 200px;
+  gap: 40px;
+  max-width: 900px;
+  padding: 50px 0;
+  margin: auto;
 }
 
 .movie {
@@ -69,9 +64,6 @@
 }
 
 .review-button {
-  background-color: #FF3B30 !important;
-  border-color: #FF3B30 !important;
-  height: auto !important;
   padding: 8px 16px !important;
   transition: all 0.3s ease !important;
 }
