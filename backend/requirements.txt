@@ -4,5 +4,5 @@ sqlalchemy
 pymysql
 pydantic
 email-validator
-dotenv
 cryptography
+python-dotenv
