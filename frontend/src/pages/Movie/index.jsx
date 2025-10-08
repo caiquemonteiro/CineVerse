@@ -2,74 +2,46 @@ import { useParams } from "react-router-dom";
 import { Tag, Button, Modal, Flex, Rate, Input, Divider, Spin } from "antd";
 import { useState, useEffect } from "react";
 import Header from "../../components/Header";
-import IMDb from "../../assets/IMDb.png";
+import IMDbLogo from "../../assets/IMDb.png";
 import ReviewComponent from "../../components/Review";
 import { EditOutlined, HeartFilled } from "@ant-design/icons";
+import { getMovieDetails, getMovieCredits } from "../../api/tmdb.api";
+import { getReleaseYear, getMovieDirector, getImdbRating, getMovieRuntime, getMovieDescription } from "../../utils" 
+import { getMovieRatings } from "../../api/omdb.api";
 import "./movie.css";
-import { API_KEY } from "../../utils/constants";
 
 export default function MoviePage() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const { TextArea } = Input;
-  const { id } = useParams();
   const [movie, setMovie] = useState(null);
+  const [credits, setCredits] = useState([]);
+  const [ratings, setRatings] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  const { id } = useParams();
 
-
-
-
- 
-  async function fetchMovie() {
-    try {
-      const options = {
-        method: "GET",
-        headers: {
-          accept: "application/json",
-          Authorization: `Bearer ${API_KEY}`,
-        },
-      };
-      const resMovie = await fetch(
-        `https://api.themoviedb.org/3/movie/${id}?language=pt-BR`,
-        options
-      );
-      const dataMovie = await resMovie.json();
-
-      const resCredits = await fetch(
-        `https://api.themoviedb.org/3/movie/${id}/credits?language=pt-BR`,
-        options
-      );
-      const dataCredits = await resCredits.json();
-
-      const directorObj = dataCredits.crew.find(
-        (person) => person.job === "Director"
-      );
-      const director = directorObj ? directorObj.name : "Indisponível";
-
-      const movieData = {
-        id: dataMovie.id,
-        title: dataMovie.title,
-        year: dataMovie.release_date ? dataMovie.release_date.split("-")[0] : "N/A",
-        poster_path: dataMovie.poster_path,
-        overview: dataMovie.overview,
-        duration: dataMovie.runtime ? `${dataMovie.runtime} min` : "N/A",
-        genres: dataMovie.genres ? dataMovie.genres.map((g) => g.name) : [],
-        rating_heart: dataMovie.vote_average?.toFixed(1),
-        rating_imdb: dataMovie.vote_average?.toFixed(1),
-        director: director,
-        reviews: [],
-      };
-
-      setMovie(movieData);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  }
+  const { TextArea } = Input;
 
   useEffect(() => {
-    fetchMovie();
+    setLoading(true);
+    getMovieDetails(id)
+      .then((res) => res.json())
+      .then((json) => setMovie(json))
+      .catch((err) => console.error(err)) // TODO: Exibir menssagem de erro com o componente Message do AntDesign
+      .finally(() => setLoading(false))
+    getMovieCredits(id)
+      .then((res) => res.json())
+      .then((json) => setCredits(json))
+      .catch((err) => console.error(err)); // TODO: Exibir menssagem de erro com o componente Message do AntDesign
   }, [id]);
+
+  useEffect(() => {
+    if (movie && movie.imdb_id) {
+      getMovieRatings(movie.imdb_id)
+        .then((res) => res.json())
+        .then((json) => setRatings(json.Ratings))
+        .catch((err) => console.error(err)); // TODO: Exibir menssagem de erro com o componente Message do AntDesign
+    }
+  }, [movie]);
 
   if (loading)
     return <Spin size="large" style={{ display: "block", margin: "50px auto" }} />;
@@ -90,33 +62,31 @@ export default function MoviePage() {
           alt={movie.title}
         />
 
-        <div>
+        <div className="movie-details">
           <h1 className="movie-title">
-            {movie.title} <span className="movie-year">({movie.year})</span>
+            {movie.title} {movie.release_date && <span className="movie-year">({getReleaseYear(movie.release_date)})</span>}
           </h1>
 
-          <p className="overview">{movie.overview}</p>
+          <p className="description">{getMovieDescription(movie.overview)}</p>
 
-          <p>
-            <strong>Diretor:</strong> {movie.director}
-          </p>
+          <p><strong>Diretor:</strong> {getMovieDirector(credits)}</p>
 
-          <p>
-            <strong>Duração:</strong> {movie.duration}
-          </p>
+          <p><strong>Duração:</strong> {getMovieRuntime(movie.runtime)}</p>
 
           {movie.genres.map((genre) => (
-            <Tag key={genre} className="genre-tag">
-              {genre}
+            <Tag key={genre.id} className="genre-tag">
+              {genre.name}
             </Tag>
           ))}
 
           <div className="ratings">
             <HeartFilled style={{ color: "#CF1322", fontSize: 35, marginRight: 4 }} />
-            <span className="heart-score"> {movie.rating_heart}</span>
+            <span className="heart-score"> {movie.vote_average?.toFixed(1)}</span>
 
-            <img src={IMDb} alt="IMDb" />
-            <span className="imdb-score"> {movie.rating_imdb}</span>
+            <img src={IMDbLogo} alt="IMDb" />
+            <span className="imdb-score"> {getImdbRating(ratings)}</span>
+
+            {/* // TODO: Adicionar notas do Rotten Tomatoes e Metacritic */}
           </div>
 
           <div className="reviews-header">
@@ -130,6 +100,7 @@ export default function MoviePage() {
               Avaliar Filme
             </Button>
 
+            {/* TODO: Transformar este formulário em um componente separado */}
             <Modal
               title="Avaliar Filme"
               open={isModalOpen}
@@ -158,7 +129,7 @@ export default function MoviePage() {
             </Modal>
           </div>
 
-          <ReviewComponent movie={movie} />
+          <ReviewComponent movieId={movie.id} />
         </div>
       </main>
     </div>

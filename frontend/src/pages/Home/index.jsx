@@ -1,27 +1,18 @@
-import { API_KEY } from "../../utils/constants";
 import { useEffect } from "react";
 import { Row, Col, Spin, } from "antd";
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/Header";
-import "./home.css";
 import useMoviesStore from "../../stores/moviesStore";
-import noImage from '../../assets/img-indisponivel.png';
+import noImage from "../../assets/img-indisponivel.png";
+import { getPopularMovies } from "../../api/tmdb.api";
+import "./home.css";
 
 export default function HomePage() {
   const { movies, setMovies, moviesSearch } = useMoviesStore();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const url = `https://api.themoviedb.org/3/movie/popular?language=pt-BR&page=1`;
-    const options = {
-      method: "GET",
-      headers: {
-        accept: "application/json",
-        Authorization: `Bearer ${API_KEY}`,
-      },
-    };
-
-    fetch(url, options)
+    getPopularMovies()
       .then((res) => res.json())
       .then((json) => setMovies(json.results))
       .catch((err) => console.error(err));
@@ -59,6 +50,8 @@ export default function HomePage() {
               <Spin size="large"/>
             </div>
         }
+        
+        {/* TODO: Utilizar o endpoint topRated do TMDB para exibir os filmes mais bem avaliados */}
       </main>
     </div>
   );

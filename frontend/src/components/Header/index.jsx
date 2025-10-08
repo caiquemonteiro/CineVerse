@@ -4,7 +4,7 @@ import { LogoutOutlined } from "@ant-design/icons";
 import logo from "../../assets/logo-horizontal.svg";
 import { useNavigate } from "react-router-dom";
 import useMoviesStore from "../../stores/moviesStore";
-import { API_KEY } from "../../utils/constants";
+import { TMDB_API_KEY } from "../../utils/constants";
 
 function Header() {
   const { setMovies, setMoviesSearch } = useMoviesStore();
@@ -18,7 +18,7 @@ function Header() {
       method: "GET",
       headers: {
         accept: "application/json",
-        Authorization: `Bearer ${API_KEY}`,
+        Authorization: `Bearer ${TMDB_API_KEY}`,
       },
     };
     fetch(url, options )
@@ -44,7 +44,7 @@ function Header() {
       method: "GET",
       headers: {
         accept: "application/json",
-        Authorization: `Bearer ${API_KEY}`,
+        Authorization: `Bearer ${TMDB_API_KEY}`,
       },
     };
 
