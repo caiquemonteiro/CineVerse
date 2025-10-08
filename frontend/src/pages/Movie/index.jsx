@@ -15,55 +15,59 @@ export default function MoviePage() {
   const [movie, setMovie] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    async function fetchMovie() {
-      try {
-        const options = {
-          method: "GET",
-          headers: {
-            accept: "application/json",
-            Authorization: `Bearer ${API_KEY}`,
-          },
-        };
-        const resMovie = await fetch(
-          `https://api.themoviedb.org/3/movie/${id}?language=pt-BR`,
-          options
-        );
-        const dataMovie = await resMovie.json();
 
-        const resCredits = await fetch(
-          `https://api.themoviedb.org/3/movie/${id}/credits?language=pt-BR`,
-          options
-        );
-        const dataCredits = await resCredits.json();
 
-        const directorObj = dataCredits.crew.find(
-          (person) => person.job === "Director"
-        );
-        const director = directorObj ? directorObj.name : "Indisponível";
 
-        const movieData = {
-          id: dataMovie.id,
-          title: dataMovie.title,
-          year: dataMovie.release_date ? dataMovie.release_date.split("-")[0] : "N/A",
-          poster_path: dataMovie.poster_path,
-          overview: dataMovie.overview,
-          duration: dataMovie.runtime ? `${dataMovie.runtime} min` : "N/A",
-          genres: dataMovie.genres ? dataMovie.genres.map((g) => g.name) : [],
-          rating_heart: dataMovie.vote_average?.toFixed(1),
-          rating_imdb: dataMovie.vote_average?.toFixed(1),
-          director: director,
-          reviews: [],
-        };
+ 
+  async function fetchMovie() {
+    try {
+      const options = {
+        method: "GET",
+        headers: {
+          accept: "application/json",
+          Authorization: `Bearer ${API_KEY}`,
+        },
+      };
+      const resMovie = await fetch(
+        `https://api.themoviedb.org/3/movie/${id}?language=pt-BR`,
+        options
+      );
+      const dataMovie = await resMovie.json();
 
-        setMovie(movieData);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
+      const resCredits = await fetch(
+        `https://api.themoviedb.org/3/movie/${id}/credits?language=pt-BR`,
+        options
+      );
+      const dataCredits = await resCredits.json();
+
+      const directorObj = dataCredits.crew.find(
+        (person) => person.job === "Director"
+      );
+      const director = directorObj ? directorObj.name : "Indisponível";
+
+      const movieData = {
+        id: dataMovie.id,
+        title: dataMovie.title,
+        year: dataMovie.release_date ? dataMovie.release_date.split("-")[0] : "N/A",
+        poster_path: dataMovie.poster_path,
+        overview: dataMovie.overview,
+        duration: dataMovie.runtime ? `${dataMovie.runtime} min` : "N/A",
+        genres: dataMovie.genres ? dataMovie.genres.map((g) => g.name) : [],
+        rating_heart: dataMovie.vote_average?.toFixed(1),
+        rating_imdb: dataMovie.vote_average?.toFixed(1),
+        director: director,
+        reviews: [],
+      };
+
+      setMovie(movieData);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
     }
+  }
 
+  useEffect(() => {
     fetchMovie();
   }, [id]);
 
