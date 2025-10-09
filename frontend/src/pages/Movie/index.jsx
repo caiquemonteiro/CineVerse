@@ -1,3 +1,4 @@
+// Comentário temporário para abrir PR
 import { useParams } from "react-router-dom";
 import { Tag, Button, Modal, Flex, Rate, Input, Divider, Spin } from "antd";
 import { useState, useEffect } from "react";
