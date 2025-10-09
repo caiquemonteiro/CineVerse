@@ -1,4 +1,5 @@
 // Comentário temporário para abrir PR
+// Forçando Git a detectar alteração
 import { useParams } from "react-router-dom";
 import { Tag, Button, Modal, Flex, Rate, Input, Divider, Spin } from "antd";
 import { useState, useEffect } from "react";
