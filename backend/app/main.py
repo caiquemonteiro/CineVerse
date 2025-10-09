@@ -3,9 +3,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session, joinedload
 from typing import List
 from datetime import date
-
 from .database import engine, SessionLocal
 from . import models, schemas
+from sqlalchemy import func
 
 app = FastAPI(title="CineVerse API")
 
@@ -54,7 +54,7 @@ def criar_usuario(payload: schemas.UsuarioCreate, db: Session = Depends(get_db))
 def listar_usuarios(db: Session = Depends(get_db)):
     return db.query(models.Usuario).all()
 
-# LOGIN bem simples
+# LOGIN 
 @app.post("/login")
 def login(email: str, senha: str, db: Session = Depends(get_db)):
     user = db.query(models.Usuario).filter(models.Usuario.email == email).first()
@@ -83,4 +83,17 @@ def listar_avaliacoes(db: Session = Depends(get_db)):
     avals = db.query(models.Avaliacao).options(joinedload(models.Avaliacao.usuario)).all()
     return avals
 
+# MÉDIAS DAS NOTAS
+@app.get("/avaliacoes/media")
+def media_notas(codfilme: int, db: Session = Depends(get_db)):
+    media = (
+        db.query(func.avg(models.Avaliacao.nota))
+        .filter(models.Avaliacao.codfilme == codfilme)
+        .scalar()
+    )
+
+    if media is None:
+        return {"mensagem": f"Nenhuma avaliação encontrada para o filme {codfilme}."}
+
+    return {"media": float(round(media, 2))}
 
