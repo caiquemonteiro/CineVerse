@@ -3,12 +3,12 @@ import { Tag, Button, Modal, Flex, Rate, Input, Divider, Spin } from "antd";
 import { useState, useEffect } from "react";
 import Header from "../../components/Header";
 import metacriticLogo from "../../assets/metacritic.png";
-import rotten_tomatoesLogo from "../../assets/rotten_tomatoes.png";
-import IMDbLogo from "../../assets/IMDb.png";
+import rotten_tomatoesLogo from "../../assets/rottenTomatoes.png";
+import IMDbLogo from "../../assets/imdb.png";
 import ReviewComponent from "../../components/Review";
 import { EditOutlined, HeartFilled } from "@ant-design/icons";
 import { getMovieDetails, getMovieCredits } from "../../api/tmdb.api";
-import { getReleaseYear, getMovieDirector, getImdbRating, getMovieRuntime, getMovieDescription } from "../../utils" 
+import { getReleaseYear, getMovieDirector, getRatingBySource, getMovieRuntime, getMovieDescription } from "../../utils" 
 import { getMovieRatings } from "../../api/omdb.api";
 import "./movie.css";
 
@@ -44,11 +44,6 @@ export default function MoviePage() {
         .catch((err) => console.error(err)); // TODO: Exibir menssagem de erro com o componente Message do AntDesign
     }
   }, [movie]);
-
-  const getRatingBySource = (ratings, source) => {
-    const rating = ratings?.find((r) => r.Source === source);
-    return rating ? rating.Value : "N/A";
-  };
 
   if (loading)
     return <Spin size="large" style={{ display: "block", margin: "50px auto" }} />;
@@ -100,9 +95,6 @@ export default function MoviePage() {
 
             <img src={rotten_tomatoesLogo} alt="Rotten Tomatoes" style={{ width: "40px", height: "auto" }} />
             <span className="rotten_tomatoes-score">{getRatingBySource(ratings, "Rotten Tomatoes")}</span>
-
-
-            {/* // TODO: Adicionar notas do Rotten Tomatoes e Metacritic */}
           </div>
 
           <div className="reviews-header">

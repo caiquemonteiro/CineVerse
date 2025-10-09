@@ -20,19 +20,9 @@ export const getMovieRuntime = (runtime) => {
   return `${hours}h ${minutes}min`;
 }
 
-export const getImdbRating = (ratings) => {
-  const imdbRating = ratings.find(rating => rating.Source === "Internet Movie Database");
-  return imdbRating ? imdbRating.Value : "N/A";
-}
-
-export const getRottenTomatoesRating = (ratings) => {
-  const rtRating = ratings.find(rating => rating.Source === "Rotten Tomatoes");
-  return rtRating ? rtRating.Value : "N/A";
-}
-
-export const getMetacriticRating = (ratings) => {
-  const metaRating = ratings.find(rating => rating.Source === "Metacritic");
-  return metaRating ? metaRating.Value : "N/A";
+export const getRatingBySource = (ratings, source) => {
+  const rating = ratings?.find((r) => r.Source === source);
+  return rating ? rating.Value : "N/A";
 }
 
 export const formatDateTime = (dateTimeString) => {
