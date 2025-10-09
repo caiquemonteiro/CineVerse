@@ -2,6 +2,8 @@ import { useParams } from "react-router-dom";
 import { Tag, Button, Modal, Flex, Rate, Input, Divider, Spin } from "antd";
 import { useState, useEffect } from "react";
 import Header from "../../components/Header";
+import metacriticLogo from "../../assets/metacritic.png";
+import rotten_tomatoesLogo from "../../assets/rotten_tomatoes.png";
 import IMDbLogo from "../../assets/IMDb.png";
 import ReviewComponent from "../../components/Review";
 import { EditOutlined, HeartFilled } from "@ant-design/icons";
@@ -18,7 +20,6 @@ export default function MoviePage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   
   const { id } = useParams();
-
   const { TextArea } = Input;
 
   useEffect(() => {
@@ -28,7 +29,8 @@ export default function MoviePage() {
       .then((json) => setMovie(json))
       .catch((err) => console.error(err)) // TODO: Exibir menssagem de erro com o componente Message do AntDesign
       .finally(() => setLoading(false))
-    getMovieCredits(id)
+    
+      getMovieCredits(id)
       .then((res) => res.json())
       .then((json) => setCredits(json))
       .catch((err) => console.error(err)); // TODO: Exibir menssagem de erro com o componente Message do AntDesign
@@ -42,6 +44,11 @@ export default function MoviePage() {
         .catch((err) => console.error(err)); // TODO: Exibir menssagem de erro com o componente Message do AntDesign
     }
   }, [movie]);
+
+  const getRatingBySource = (ratings, source) => {
+    const rating = ratings?.find((r) => r.Source === source);
+    return rating ? rating.Value : "N/A";
+  };
 
   if (loading)
     return <Spin size="large" style={{ display: "block", margin: "50px auto" }} />;
@@ -83,8 +90,15 @@ export default function MoviePage() {
             <HeartFilled style={{ color: "#CF1322", fontSize: 35, marginRight: 4 }} />
             <span className="heart-score"> {movie.vote_average?.toFixed(1)}</span>
 
-            <img src={IMDbLogo} alt="IMDb" />
-            <span className="imdb-score"> {getImdbRating(ratings)}</span>
+            <img src={IMDbLogo} alt="IMDb" style={{ width: "40px", height: "auto" }} />
+            <span className="imdb-score">{getRatingBySource(ratings, "Internet Movie Database")}</span>
+
+            <img src={metacriticLogo} alt="Metacritic" style={{ width: "40px", height: "auto" }} />
+            <span className="metacritic-score">{getRatingBySource(ratings, "Metacritic")}</span>
+
+            <img src={rotten_tomatoesLogo} alt="Rotten Tomatoes" style={{ width: "40px", height: "auto" }} />
+            <span className="rotten_tomatoes-score">{getRatingBySource(ratings, "Rotten Tomatoes")}</span>
+
 
             {/* // TODO: Adicionar notas do Rotten Tomatoes e Metacritic */}
           </div>
