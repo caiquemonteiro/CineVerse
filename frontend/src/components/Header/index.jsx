@@ -4,7 +4,7 @@ import { LogoutOutlined } from "@ant-design/icons";
 import logo from "../../assets/logo-horizontal.svg";
 import { useNavigate } from "react-router-dom";
 import useMoviesStore from "../../stores/moviesStore";
-import { API_KEY } from "../../utils/constants";
+import { TMDB_API_KEY } from "../../utils/constants";
 
 function Header() {
   const { setMovies, setMoviesSearch } = useMoviesStore();
@@ -12,13 +12,14 @@ function Header() {
     
   const { Search } = Input;
 
+  // TODO: Substituir fetch por função na api
   const fetchPopularMovies = () => {
     const url = `https://api.themoviedb.org/3/movie/popular?language=pt-BR&page=1`;
     const options = {
       method: "GET",
       headers: {
         accept: "application/json",
-        Authorization: `Bearer ${API_KEY}`,
+        Authorization: `Bearer ${TMDB_API_KEY}`,
       },
     };
     fetch(url, options )
@@ -27,10 +28,12 @@ function Header() {
         setMovies(json.results);
         setMoviesSearch('');
       })
-      .catch((err) => console.error(err));
+      .catch((err) => console.error(err)); // TODO: Exibir menssagem de erro com o componente Message do AntDesign
   };
 
   const onSearch = (value) => {
+    // TODO: Navegar para a home se não estiver nela
+
     const searchText = value;
 
     if (!searchText) {
@@ -39,12 +42,14 @@ function Header() {
     }
 
     setMoviesSearch(searchText);
+
+    // TODO: Substituir fetch por função na api
     const url = `https://api.themoviedb.org/3/search/movie?query=${searchText}&include_adult=false&language=pt-BR&page=1`;
     const options = {
       method: "GET",
       headers: {
         accept: "application/json",
-        Authorization: `Bearer ${API_KEY}`,
+        Authorization: `Bearer ${TMDB_API_KEY}`,
       },
     };
 
