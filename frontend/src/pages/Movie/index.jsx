@@ -58,6 +58,8 @@ export default function MoviePage() {
     <div className="movie-container">
       <Header />
 
+      {/* TODO: Adicionar componente de BreadCrumb do AntDesign */}
+
       <main className="movie-content">
         <img
           className="movie"

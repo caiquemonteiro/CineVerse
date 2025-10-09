@@ -15,12 +15,14 @@ export default function HomePage() {
     getPopularMovies()
       .then((res) => res.json())
       .then((json) => setMovies(json.results))
-      .catch((err) => console.error(err));
+      .catch((err) => console.error(err)); // TODO: Exibir menssagem de erro com o componente Message do AntDesign
   }, []);
 
   return (
     <div className="home-container">
       <Header />
+
+      {/* TODO: Adicionar componente de BreadCrumb do AntDesign */}
 
       <main className="home-content">
         <h2>
