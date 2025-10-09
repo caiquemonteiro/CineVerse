@@ -103,7 +103,7 @@ export default function MoviePage() {
             <span className="rotten_tomatoes-score">{getRatingBySource(ratings, "Rotten Tomatoes")}</span>
 
 
-            {/* // TODO: Adicionar notas do Rotten Tomatoes e Metacritic */}
+            {/* // TODO: Adicionar notas do Rotten Tomatoes e Metacritic - Foram adicionados*/}
           </div>
 
           <div className="reviews-header">
