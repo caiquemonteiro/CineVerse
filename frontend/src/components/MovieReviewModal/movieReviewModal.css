@@ -1,0 +1,57 @@
+
+.custom-modal .ant-modal-content {
+  border-radius: 12px;
+  padding: 24px;
+}
+
+
+.custom-modal-divider {
+  margin: 16px 0;
+}
+
+
+.review-section {
+  margin-bottom: 16px;
+}
+
+
+.review-section label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  font-size: 14px;
+  color: #333;
+}
+
+
+.custom-heart-rate .ant-rate-star-full {
+  color: #cf1322; 
+  font-size: 28px; 
+}
+
+.custom-heart-rate .ant-rate-star-half {
+  color: #cf1322;
+  font-size: 28px;
+}
+
+
+.review-section textarea.ant-input {
+  border-radius: 8px;
+  padding: 8px;
+  font-size: 14px;
+  resize: vertical;
+}
+
+.custom-modal .ant-btn-primary {
+  background-color: #1890ff;
+  border-color: #1890ff;
+}
+
+.custom-modal .ant-btn-primary:hover {
+  background-color: #40a9ff;
+  border-color: #40a9ff;
+}
+
+.custom-modal .ant-btn-default {
+  border-radius: 8px;
+}
