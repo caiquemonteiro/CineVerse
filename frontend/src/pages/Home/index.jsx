@@ -1,13 +1,15 @@
 import { useEffect } from "react";
-import { Row, Col, Spin, } from "antd";
+import { Row, Col, Spin, message, Breadcrumb } from "antd";
+import { HomeOutlined, StarOutlined, SearchOutlined } from '@ant-design/icons';
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/Header";
 import useMoviesStore from "../../stores/moviesStore";
-import noImage from "../../assets/img-indisponivel.png";
+import noImage from "../../assets/img-indisponivel.png"; 
 import { getPopularMovies } from "../../api/tmdb.api";
 import "./home.css";
 
 export default function HomePage() {
+  const [messageApi, contextHolder] = message.useMessage();
   const { movies, setMovies, moviesSearch } = useMoviesStore();
   const navigate = useNavigate();
 
@@ -15,15 +17,18 @@ export default function HomePage() {
     getPopularMovies()
       .then((res) => res.json())
       .then((json) => setMovies(json.results))
-      .catch((err) => console.error(err)); // TODO: Exibir menssagem de erro com o componente Message do AntDesign
+      .catch((err) => {
+        console.error(err);
+        messageApi.error('Não foi possível carregar os filmes');
+      }); 
   }, []);
 
   return (
     <div className="home-container">
+      {contextHolder}
+
       <Header />
-
-      {/* TODO: Adicionar componente de BreadCrumb do AntDesign */}
-
+      
       <main className="home-content">
         <h2>
           {moviesSearch ? `Buscando por: ${moviesSearch}` : "Filmes em alta"}

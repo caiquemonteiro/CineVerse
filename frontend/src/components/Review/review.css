@@ -62,4 +62,6 @@
   font-size: 14px;
 }
 
-
+.empty-description {
+  color: rgb(255, 255, 255);
+}
