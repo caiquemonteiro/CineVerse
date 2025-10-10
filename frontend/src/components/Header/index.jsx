@@ -1,66 +1,60 @@
 import "./header.css";
-import { Input, Avatar, Button, Divider } from "antd";
+import { Input, Avatar, Button, Divider, message } from "antd";
 import { LogoutOutlined } from "@ant-design/icons";
 import logo from "../../assets/logo-horizontal.svg";
 import { useNavigate } from "react-router-dom";
 import useMoviesStore from "../../stores/moviesStore";
-import { TMDB_API_KEY } from "../../utils/constants";
+import { getPopularMovies, getSearchMovies } from "../../api/tmdb.api";
 
 function Header() {
+  const [messageApi, contextHolder] = message.useMessage();
   const { setMovies, setMoviesSearch } = useMoviesStore();
   const navigate = useNavigate(); 
     
   const { Search } = Input;
 
-  // TODO: Substituir fetch por função na api
   const fetchPopularMovies = () => {
-    const url = `https://api.themoviedb.org/3/movie/popular?language=pt-BR&page=1`;
-    const options = {
-      method: "GET",
-      headers: {
-        accept: "application/json",
-        Authorization: `Bearer ${TMDB_API_KEY}`,
-      },
-    };
-    fetch(url, options )
+    
+    getPopularMovies()
       .then((res) => res.json())
       .then((json) => {
         setMovies(json.results);
         setMoviesSearch('');
       })
-      .catch((err) => console.error(err)); // TODO: Exibir menssagem de erro com o componente Message do AntDesign
+      .catch((err) => {
+        console.error(err);
+        messageApi.error('Não foi possível carregar os filmes');
+      }); 
   };
 
   const onSearch = (value) => {
-    // TODO: Navegar para a home se não estiver nela
 
     const searchText = value;
 
     if (!searchText) {
-      fetchPopularMovies(); 
+      fetchPopularMovies();
       return; 
     }
 
     setMoviesSearch(searchText);
 
-    // TODO: Substituir fetch por função na api
-    const url = `https://api.themoviedb.org/3/search/movie?query=${searchText}&include_adult=false&language=pt-BR&page=1`;
-    const options = {
-      method: "GET",
-      headers: {
-        accept: "application/json",
-        Authorization: `Bearer ${TMDB_API_KEY}`,
-      },
-    };
-
-    fetch(url, options )
+    getSearchMovies(searchText)
       .then((res) => res.json())
-      .then((json) => setMovies(json.results))
-      .catch((err) => console.error(err));
+      .then((json) => {
+        setMovies(json.results);
+        navigate('/home');
+      })
+      .catch((err) => {
+        console.error(err);
+        messageApi.error('Não foi possível realizar a pesquisa');
+      }); 
   };
 
   return (
     <header className="header">
+
+      {contextHolder}
+
       <img src={logo} alt="CineVerse" onClick={() => {
         fetchPopularMovies();
         navigate('/home');

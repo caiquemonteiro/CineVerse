@@ -26,3 +26,7 @@ export const getMovieCredits = (movieId) => {
 export const getMovieReviews = (movieId) => {
   return fetch(`${TMDB_BASE_URL}/movie/${movieId}/reviews?language=${LANG}&page=1`, options);
 }
+
+export const getSearchMovies = (searchText) => {
+  return fetch(`${TMDB_BASE_URL}/search/movie?query=${searchText}&include_adult=false&language=${LANG}&page=1`, options);
+}

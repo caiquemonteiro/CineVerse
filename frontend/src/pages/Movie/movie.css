@@ -94,6 +94,13 @@
   border-color: #ff0400;
 }
 
+.breadcrumb-movie,
+.breadcrumb-movie .ant-breadcrumb-link,
+.breadcrumb-movie .ant-breadcrumb-separator,
+.breadcrumb-movie .anticon {
+  
+  color: white !important;
+}
 
 @media (max-width: 768px) {
   .movie-content {

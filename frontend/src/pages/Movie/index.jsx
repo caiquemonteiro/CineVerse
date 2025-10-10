@@ -1,5 +1,7 @@
+import "./movie.css";
+import noImage from "../../assets/img-indisponivel.png";
 import { useParams } from "react-router-dom";
-import { Tag, Button, Modal, Flex, Rate, Input, Divider, Spin } from "antd";
+import { Tag, Button, Modal, Flex, Rate, Input, Divider, Spin, message, Breadcrumb } from "antd";
 import { useState, useEffect } from "react";
 import Header from "../../components/Header";
 import metacriticLogo from "../../assets/metacritic.png";
@@ -7,12 +9,13 @@ import rotten_tomatoesLogo from "../../assets/rottenTomatoes.png";
 import IMDbLogo from "../../assets/imdb.png";
 import ReviewComponent from "../../components/Review";
 import { EditOutlined, HeartFilled } from "@ant-design/icons";
+import { HomeOutlined, VideoCameraOutlined } from '@ant-design/icons';
 import { getMovieDetails, getMovieCredits } from "../../api/tmdb.api";
 import { getReleaseYear, getMovieDirector, getRatingBySource, getMovieRuntime, getMovieDescription } from "../../utils" 
 import { getMovieRatings } from "../../api/omdb.api";
-import "./movie.css";
 
 export default function MoviePage() {
+  const [messageApi, contextHolder] = message.useMessage();
   const [movie, setMovie] = useState(null);
   const [credits, setCredits] = useState([]);
   const [ratings, setRatings] = useState([]);
@@ -27,13 +30,19 @@ export default function MoviePage() {
     getMovieDetails(id)
       .then((res) => res.json())
       .then((json) => setMovie(json))
-      .catch((err) => console.error(err)) // TODO: Exibir menssagem de erro com o componente Message do AntDesign
+      .catch((err) => {
+        console.error(err);
+        messageApi.error('Não foi possível carregar os detalhes do filme');
+      })
       .finally(() => setLoading(false))
     
       getMovieCredits(id)
       .then((res) => res.json())
       .then((json) => setCredits(json))
-      .catch((err) => console.error(err)); // TODO: Exibir menssagem de erro com o componente Message do AntDesign
+      .catch((err) => {
+        console.error(err);
+        messageApi.error('Não foi possível carregar os créditos do filme');
+      })
   }, [id]);
 
   useEffect(() => {
@@ -41,7 +50,10 @@ export default function MoviePage() {
       getMovieRatings(movie.imdb_id)
         .then((res) => res.json())
         .then((json) => setRatings(json.Ratings))
-        .catch((err) => console.error(err)); // TODO: Exibir menssagem de erro com o componente Message do AntDesign
+        .catch((err) => {
+          console.error(err);
+          messageApi.error('Não foi possível carregar as notas do filme');
+        })
     }
   }, [movie]);
 
@@ -51,9 +63,34 @@ export default function MoviePage() {
 
   return (
     <div className="movie-container">
+
+      {contextHolder}
+
       <Header />
 
-      {/* TODO: Adicionar componente de BreadCrumb do AntDesign */}
+      <Breadcrumb
+        className="breadcrumb-movie"
+        style={{ margin: '16px 50px' }}
+        items={[
+          {
+            title: (
+              <>
+                <HomeOutlined />
+                <span style={{ marginLeft: 8 }}>Home</span>
+              </>
+            ),
+            href: "/home"
+          },
+          {
+            title: (
+              <>
+                <VideoCameraOutlined />
+                <span style={{ marginLeft: 8 }}>{movie?.title}</span>
+              </>
+            ),
+          },
+        ]}
+      />
 
       <main className="movie-content">
         <img
@@ -61,7 +98,7 @@ export default function MoviePage() {
           src={
             movie.poster_path
               ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
-              : "https://via.placeholder.com/500x750?text=Imagem+indisponível"
+              : noImage
           }
           alt={movie.title}
         />

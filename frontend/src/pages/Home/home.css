@@ -21,3 +21,12 @@
   align-items: center;
   height: 200px;
 }
+
+
+.breadcrumb-home,
+.breadcrumb-home .ant-breadcrumb-link,
+.breadcrumb-home .ant-breadcrumb-separator,
+.breadcrumb-home .anticon {
+  
+  color: white !important;
+}
