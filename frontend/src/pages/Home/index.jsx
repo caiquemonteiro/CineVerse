@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { Row, Col, Spin, message, Breadcrumb } from "antd";
-import { HomeOutlined, StarOutlined, SearchOutlined } from '@ant-design/icons';
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/Header";
 import useMoviesStore from "../../stores/moviesStore";

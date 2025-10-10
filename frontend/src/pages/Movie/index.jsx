@@ -9,7 +9,7 @@ import rotten_tomatoesLogo from "../../assets/rottenTomatoes.png";
 import IMDbLogo from "../../assets/imdb.png";
 import ReviewComponent from "../../components/Review";
 import { EditOutlined, HeartFilled } from "@ant-design/icons";
-import { HomeOutlined, StarOutlined, VideoCameraOutlined } from '@ant-design/icons';
+import { HomeOutlined, VideoCameraOutlined } from '@ant-design/icons';
 import { getMovieDetails, getMovieCredits } from "../../api/tmdb.api";
 import { getReleaseYear, getMovieDirector, getRatingBySource, getMovieRuntime, getMovieDescription } from "../../utils" 
 import { getMovieRatings } from "../../api/omdb.api";
