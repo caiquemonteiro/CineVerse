@@ -1,7 +1,6 @@
-import "./movie.css";
 import noImage from "../../assets/img-indisponivel.png";
 import { useParams } from "react-router-dom";
-import { Tag, Button, Modal, Flex, Rate, Input, Divider, Spin, message, Breadcrumb, Empty } from "antd";
+import { Tag, Button, Input, Spin, message, Breadcrumb } from "antd";
 import { useState, useEffect } from "react";
 import Header from "../../components/Header";
 import metacriticLogo from "../../assets/metacritic.png";
@@ -13,6 +12,8 @@ import { HomeOutlined, VideoCameraOutlined } from '@ant-design/icons';
 import { getMovieDetails, getMovieCredits } from "../../api/tmdb.api";
 import { getReleaseYear, getMovieDirector, getRatingBySource, getMovieRuntime, getMovieDescription } from "../../utils" 
 import { getMovieRatings } from "../../api/omdb.api";
+import MovieReviewModal from "../../components/MovieReviewModal/";
+import "./movie.css";
 
 export default function MoviePage() {
   const [messageApi, contextHolder] = message.useMessage();
@@ -160,33 +161,15 @@ export default function MoviePage() {
               Avaliar Filme
             </Button>
 
-            {/* TODO: Transformar este formulário em um componente separado */}
-            <Modal
-              title="Avaliar Filme"
-              open={isModalOpen}
-              onOk={() => {}}
-              onCancel={() => setIsModalOpen(false)}
-              okText="Avaliar"
-              cancelText="Cancelar"
-              className="custom-modal"
-            >
-              <Divider style={{ margin: "16px 0" }} />
+            <MovieReviewModal
+              isOpen={isModalOpen}
+              onClose={() => setIsModalOpen(false)}
+              onSubmit={({ rating, comment }) => {
+                console.log("Avaliação enviada:", { movieId: movie.id, rating, comment });
+              }}
+              />
 
-              <div style={{ marginBottom: 16 }}>
-                <label style={{ display: "block", marginBottom: 8 }}>Nota do filme:</label>
-                <Flex vertical gap="middle">
-                  <Rate character={<HeartFilled />} allowHalf count={10} className="custom-heart-rate" />
-                </Flex>
-              </div>
-
-              <div style={{ marginBottom: 16 }}>
-                <label style={{ display: "block", marginBottom: 8 }}>Comentário:</label>
-                <TextArea
-                  placeholder="Conte para as pessoas o que você achou deste filme..."
-                  rows={4}
-                />
-              </div>
-            </Modal>
+           
           </div>
 
           <ReviewComponent movieId={movie.id} />
