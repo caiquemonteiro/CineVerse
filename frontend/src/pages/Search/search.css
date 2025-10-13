@@ -1,0 +1,24 @@
+.search-content {
+  padding: 20px 50px;
+}
+
+.movie-search {
+  border-radius: 8px; 
+  width: 100%;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 8px rgba(67, 67, 67, 0.1);
+}
+
+.movie-search:hover {
+  transform: translateY(-5px); 
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+}
+ 
+.breadcrumb-search,
+.breadcrumb-search .ant-breadcrumb-link,
+.breadcrumb-search .ant-breadcrumb-separator,
+.breadcrumb-search .anticon {
+  
+  color: white !important;
+} 

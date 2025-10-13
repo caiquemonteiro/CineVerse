@@ -102,6 +102,13 @@
   color: white !important;
 }
 
+.movie-not-found{
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 @media (max-width: 768px) {
   .movie-content {
     flex-direction: column; 

@@ -1,7 +1,7 @@
 import "./movie.css";
 import noImage from "../../assets/img-indisponivel.png";
 import { useParams } from "react-router-dom";
-import { Tag, Button, Modal, Flex, Rate, Input, Divider, Spin, message, Breadcrumb } from "antd";
+import { Tag, Button, Modal, Flex, Rate, Input, Divider, Spin, message, Breadcrumb, Empty } from "antd";
 import { useState, useEffect } from "react";
 import Header from "../../components/Header";
 import metacriticLogo from "../../assets/metacritic.png";
@@ -59,7 +59,22 @@ export default function MoviePage() {
 
   if (loading)
     return <Spin size="large" style={{ display: "block", margin: "50px auto" }} />;
-  if (!movie) return <p>Filme não encontrado</p>;
+  console.log(movie)
+  if (movie.success === false) 
+    
+  return (
+    <div className="movie-not-found">
+      <Empty
+            image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
+            styles={{ image: { height: 60, marginTop: 30 } }}
+            description={
+              <span className="empty-description">
+                Filme não encontrado
+              </span>
+            }
+      />
+    </div>
+  );
 
   return (
     <div className="movie-container">
@@ -114,7 +129,7 @@ export default function MoviePage() {
 
           <p><strong>Duração:</strong> {getMovieRuntime(movie.runtime)}</p>
 
-          {movie.genres.map((genre) => (
+          {movie.genres && movie.genres.map((genre) => (
             <Tag key={genre.id} className="genre-tag">
               {genre.name}
             </Tag>
