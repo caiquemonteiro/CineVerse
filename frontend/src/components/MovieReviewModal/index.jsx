@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Modal, Divider, Flex, Rate, Input } from "antd";
 import { HeartFilled } from "@ant-design/icons";
-import "./moviereviewmodal.css";
+import "./movieReviewModal.css";
 
 export default function MovieReviewModal({ isOpen, onClose, onSubmit }) {
   const [rating, setRating] = useState(0);
