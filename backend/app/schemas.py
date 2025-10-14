@@ -1,46 +1,55 @@
-from pydantic import BaseModel, ConfigDict, field_validator
+# app/schemas.py
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 from typing import Optional
 from datetime import date
 
+# ========= USUÁRIO =========
+
 class UsuarioCreate(BaseModel):
-    nome: str
-    email: str
-    senha: str
+    nome: str = Field(..., min_length=1, max_length=120)
+    email: EmailStr
+    senha: str  # em produção, use hash
+
+    # normaliza e-mail para minúsculas (antes da validação)
+    @field_validator("email", mode="before")
+    @classmethod
+    def normalize_email(cls, v):
+        if v is None:
+            return v
+        return str(v).strip().lower()
 
 class UsuarioOut(BaseModel):
     id: int
     nome: str
-    email: str   
+    email: EmailStr
     model_config = ConfigDict(from_attributes=True)
 
-class UsuarioPublic(BaseModel):   # acrescentei essa classe para interagir com AvalicaoOut e puxar o nome do usuario que fez o comentario
+class UsuarioPublic(BaseModel):
     id: int
     nome: str
     model_config = ConfigDict(from_attributes=True)
 
+# ========= AVALIAÇÃO =========
+
 class AvaliacaoCreate(BaseModel):
     codfilme: int
-    nota: float
-    comentario: str
-    usuario_id: int
-    data: date | None = None
-
-    @field_validator("usuario_id", mode="before")
-    @classmethod
-    def zero_to_none(cls, v):
-        if v in (0, "0", "", None):
-            return None
-        return v
+    nota: float = Field(..., ge=0, le=10)
+    comentario: Optional[str] = Field(None, max_length=500)
+    usuario_id: Optional[int] = None
+    data: Optional[date] = None
 
 class AvaliacaoOut(BaseModel):
     id: int
     codfilme: int
     nota: float
-    comentario: str
+    comentario: Optional[str] = None
     data: date
     usuario_id: int
     usuario: Optional[UsuarioPublic] = None
     model_config = ConfigDict(from_attributes=True)
+
+
+
 
     
 
