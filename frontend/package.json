@@ -13,6 +13,7 @@
     "@ant-design/icons": "^6.0.2",
     "@ant-design/v5-patch-for-react-19": "^1.0.3",
     "antd": "^5.27.4",
+    "axios": "^1.12.2",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-markdown": "^10.1.0",

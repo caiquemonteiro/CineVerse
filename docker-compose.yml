@@ -1,43 +1,57 @@
 services:
-  backend:
-    build: ./backend
-    container_name: cine-verse-backend
-    ports:
-      - "8000:8000"
-    volumes:
-      - ./backend:/app
-    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
-    depends_on:
-      db:
-        condition: service_healthy # ESPERA ATÉ QUE O DB ESTEJA HEALTHY
-
-  frontend:
-    build: ./frontend
-    container_name: cine-verse-frontend
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-    environment:
-      - CHOKIDAR_USEPOLLING=true
-    command: npm run dev -- --host --port 3000
-  
   db:
     image: mysql:8.0
     container_name: cine-verse-db
-    healthcheck:
-      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u$$MYSQL_USER -p$$MYSQL_PASSWORD"]
-      timeout: 5s
-      retries: 10 # Tentar 10 vezes
-      interval: 10s # A cada 10 segundos
     restart: always
-    ports:
-      - "3307:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: senha
+      MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: login
       MYSQL_USER: cine
       MYSQL_PASSWORD: senha
-volumes:
-      db_data: {}
+    ports:
+      - "3307:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.backend
+    container_name: cine-verse-backend
+    command: /app/wait-for-db.sh uvicorn main:app --host 0.0.0.0 --port 8000
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_USER: cine
+      DB_PASSWORD: senha
+      DB_NAME: login
+      PYTHONPATH: /app
+
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.frontend
+    container_name: cine-verse-frontend
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_API_URL: http://localhost:8000
+    depends_on:
+      - backend
+
+  ml-tf:
+    image: tensorflow/tensorflow:latest-jupyter
+    container_name: cine-verse-ml-tf
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./ml:/tf

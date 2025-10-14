@@ -1,0 +1,21 @@
+FROM python:3.12-slim
+
+WORKDIR /app
+
+COPY wait-for-db.sh /app/wait-for-db.sh
+RUN chmod +x /app/wait-for-db.sh
+# COPY wait-for-db.sh .
+
+RUN apt-get update \
+    && apt-get install -y dos2unix netcat-openbsd mariadb-client \
+    && dos2unix /app/wait-for-db.sh \
+    && chmod +x /app/wait-for-db.sh \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+CMD ["/app/wait-for-db.sh", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+

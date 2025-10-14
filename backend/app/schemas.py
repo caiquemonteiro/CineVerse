@@ -1,11 +1,18 @@
-from pydantic import BaseModel, ConfigDict, field_validator
+from pydantic import BaseModel, ConfigDict, field_validator, EmailStr
 from typing import Optional
 from datetime import date
 
 class UsuarioCreate(BaseModel):
     nome: str
-    email: str
+    email: EmailStr
     senha: str
+    @field_validator("senha")
+    @classmethod
+    def validar_senha(cls, v):
+        if len(v) < 6:
+            raise ValueError("A senha deve ter pelo menos 6 caracteres")
+        return v
+
 
 class UsuarioOut(BaseModel):
     id: int
