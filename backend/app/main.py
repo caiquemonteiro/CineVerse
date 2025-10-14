@@ -40,7 +40,7 @@ def criar_usuario(payload: schemas.UsuarioCreate, db: Session = Depends(get_db))
         raise HTTPException(status_code=400, detail="E-mail já cadastrado.")
     
     data = payload.model_dump()
-    data["senha"] = "12345"     # senha padrão (apenas para estudo)
+    data["senha"] = payload.senha
 
     obj = models.Usuario(**data)
     try:
@@ -63,7 +63,8 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
     senha = form_data.password
 
     user = db.query(models.Usuario).filter(models.Usuario.email == email).first()
-    if not user or senha != "12345":
+    if not user or senha != user.senha:
+
         raise HTTPException(status_code=400, detail="E-mail ou senha inválidos.")
     
     token = criar_token_acesso(data={"sub": str(user.id)})
@@ -116,5 +117,3 @@ def media_notas(codfilme: int, db: Session = Depends(get_db)):
     if media is None:
         return {"mensagem": f"Nenhuma avaliação encontrada para o filme {codfilme}."}
     return {"media": float(round(media, 2))}
-
-

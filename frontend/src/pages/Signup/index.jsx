@@ -1,13 +1,32 @@
-import { Form, Input, Button, Typography } from "antd";
+import { Form, Input, Button, Typography, message } from "antd";
 import { UserOutlined, LockOutlined, MailOutlined } from "@ant-design/icons";
 import "./signup.css";
 import logo from "../../assets/logo.svg";
 import { useNavigate } from "react-router-dom";
+import { criarUsuario } from "../../api/cineVerse.api";
 
 const { Text } = Typography;
 
 export default function SignupPage() {
   const navigate = useNavigate();
+
+  const singUp = (values) => { 
+    criarUsuario(values)
+      .then((response) => {
+        if (response.ok) {
+          message.success("Usuário cadastrado com sucesso!");
+          navigate("/");
+        } else {
+          return response.json().then((errorData) => {
+            message.error(errorData.detail || "Erro ao cadastrar usuário.");
+          });
+        }
+      })
+      .catch((error) => {
+        console.error("Erro na requisição:", error);
+        message.error("Erro de conexão com o servidor.");
+      });
+  };
 
   return (
     <article className="login-container">
@@ -15,9 +34,9 @@ export default function SignupPage() {
 
         <img src={logo} alt="CineVerse Logo" className="login-logo" />
 
-        <Form name="login_form">
+        <Form name="signup_form" onFinish={singUp}>
 
-          <Form.Item name="user">
+          <Form.Item name="nome" rules={[{ required: true, message: 'Por favor, insira seu nome!' }]}>
             <Input
               prefix={<UserOutlined />}
               placeholder="Nome"
@@ -25,7 +44,7 @@ export default function SignupPage() {
             />
           </Form.Item>
           
-          <Form.Item name="email">
+          <Form.Item name="email" rules={[{ required: true, message: 'Por favor, insira seu e-mail!' }, { type: 'email', message: 'O e-mail inserido não é válido!' }]}>
             <Input
               prefix={<MailOutlined />}
               placeholder="E-mail"
@@ -33,7 +52,7 @@ export default function SignupPage() {
             />
           </Form.Item>
 
-          <Form.Item name="password">
+          <Form.Item name="senha" rules={[{ required: true, message: 'Por favor, insira sua senha!' }]}>
             <Input.Password
               prefix={<LockOutlined />}
               placeholder="Senha"
@@ -44,9 +63,9 @@ export default function SignupPage() {
           <Form.Item>
             <Button
               type="primary"
+              htmlType="submit"
               block
               size="large"
-              onClick={() => navigate('/')}
             >
               Criar Conta
             </Button>
