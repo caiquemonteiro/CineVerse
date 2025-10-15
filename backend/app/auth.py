@@ -52,5 +52,4 @@ def verificar_token(token: str = Depends(oauth2_scheme)) -> int:
 
 
 
-
     
