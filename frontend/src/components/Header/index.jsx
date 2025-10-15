@@ -8,13 +8,12 @@ import useAuthStore from "../../stores/authStore";
 
 function Header() {
   const { moviesSearch, setMoviesSearch } = useMoviesStore();
-  const { user } = useAuthStore();
+  const { user, clearUser } = useAuthStore();
   const navigate = useNavigate(); 
     
   const { Search } = Input;
 
   const onSearch = () => {
-
     if (!moviesSearch) {
       navigate('/home');
       return;
@@ -41,10 +40,10 @@ function Header() {
 
       <div className="user-info">
         <Avatar className="user-avatar">
-          {user?.name?.charAt(0).toUpperCase() || "?"}
+          {user?.nome?.charAt(0).toUpperCase() || "?"}
         </Avatar>
         <div className="user-details">
-          <span className="username">{user?.name || "Usuário"}</span>
+          <span className="username">{user?.nome || "Usuário"}</span>
           <span className="user-email">{user?.email || ""}</span>
         </div>
         <Divider type="vertical" style={{ borderColor: "lightgray" }} />
@@ -57,7 +56,7 @@ function Header() {
           }}
         >
           <LogoutOutlined />
-          </Button>
+        </Button>
       </div>
     </header>
   );

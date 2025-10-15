@@ -21,6 +21,17 @@
   font-weight: 500;
 }
 
+.user-details {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+}
+
+.user-email {
+  font-size: 12px;
+  color: gray;
+}
+
 .logout-button {
   color: #FF383C; 
   padding: 0;
