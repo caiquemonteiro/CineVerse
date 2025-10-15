@@ -4,15 +4,16 @@ import { LogoutOutlined } from "@ant-design/icons";
 import logo from "../../assets/logo-horizontal.svg";
 import { useNavigate } from "react-router-dom";
 import useMoviesStore from "../../stores/moviesStore";
+import useAuthStore from "../../stores/authStore";
 
 function Header() {
   const { moviesSearch, setMoviesSearch } = useMoviesStore();
+  const { user, clearUser } = useAuthStore();
   const navigate = useNavigate(); 
     
   const { Search } = Input;
 
   const onSearch = () => {
-
     if (!moviesSearch) {
       navigate('/home');
       return;
@@ -38,15 +39,26 @@ function Header() {
       />
 
       <div className="user-info">
-        <Avatar className="user-avatar">J</Avatar>
-        <span className="username">João da Silva</span>
-        <Divider type="vertical" style={{borderColor: "lightgray"}} />
-        <Button className="logout-button" type="text" onClick={() => navigate('/')}>
+        <Avatar className="user-avatar">
+          {user?.nome?.charAt(0).toUpperCase() || "?"}
+        </Avatar>
+        <div className="user-details">
+          <span className="username">{user?.nome || "Usuário"}</span>
+          <span className="user-email">{user?.email || ""}</span>
+        </div>
+        <Divider type="vertical" style={{ borderColor: "lightgray" }} />
+        <Button
+          className="logout-button"
+          type="text"
+          onClick={() => {
+            clearUser();
+            navigate('/');
+          }}
+        >
           <LogoutOutlined />
         </Button>
       </div>
     </header>
   );
 }
-
 export default Header;
