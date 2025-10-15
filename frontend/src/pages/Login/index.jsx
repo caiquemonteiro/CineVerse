@@ -3,11 +3,27 @@ import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import "./login.css";
 import logo from "../../assets/logo.svg";
 import { useNavigate } from "react-router-dom";
+import { login } from "../../api/cineVerse.api";
+import useAuthStore from "../../stores/authStore";
 
 const { Text } = Typography;
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const { setUser } = useAuthStore();
+
+  const onLogin =  (values) => {
+    login(values)
+      .then((res) => res.json())
+      .then((json) => {
+        setUser(json);
+        navigate('/home');
+      })
+      .catch((err) => {
+        console.error(err);
+        messageApi.error('Erro ao fazer login.');
+      });
+  }
 
   return (
     <article className="login-container">
@@ -15,9 +31,9 @@ export default function LoginPage() {
 
         <img src={logo} alt="CineVerse Logo" className="login-logo" />
 
-        <Form name="login_form">
+        <Form name="login_form" onFinish={onLogin}>
           
-          <Form.Item name="email">
+          <Form.Item name="username" rules={[{ required: true, message: "Informe seu e-mail!" }]}>
             <Input
               prefix={<UserOutlined />}
               placeholder="E-mail"
@@ -25,7 +41,7 @@ export default function LoginPage() {
             />
           </Form.Item>
 
-          <Form.Item name="password">
+          <Form.Item name="password" rules={[{ required: true, message: "Informe sua senha!" }]}>
             <Input.Password
               prefix={<LockOutlined />}
               placeholder="Senha"
@@ -39,7 +55,7 @@ export default function LoginPage() {
               block
               className="login-button"
               size="large"
-              onClick={() => navigate('/home')}
+              htmlType="submit"
             >
               Entrar
             </Button>

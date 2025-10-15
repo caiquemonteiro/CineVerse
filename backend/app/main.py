@@ -1,6 +1,5 @@
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session, joinedload
 from typing import List
 from datetime import date, datetime
@@ -65,15 +64,14 @@ def listar_usuarios(db: Session = Depends(get_db)):
 # LOGIN
 
 @app.post("/login")
-def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-    email = form_data.username.strip().lower()
-    senha = form_data.password
+def login(data: schemas.LoginRequest, db: Session = Depends(get_db)):
+    email = data.username
+    senha = data.password
 
     user = db.query(models.Usuario).filter(func.lower(models.Usuario.email) == email).first()
     if not user or senha != user.senha:
-
         raise HTTPException(status_code=400, detail="E-mail ou senha inválidos.")
-
+    
     token = criar_token_acesso(data={"sub": str(user.id)})
     return {
         "access_token": token,
@@ -118,17 +116,30 @@ def criar_avaliacao(
         db.rollback()
         raise HTTPException(status_code=500, detail="Erro ao salvar avaliação.")
 
-@app.get("/avaliacoes", response_model=List[schemas.AvaliacaoOut])
+@app.get("/avaliacoes/{codfilme}", response_model=List[schemas.AvaliacaoOut])
 def listar_avaliacoes(
+    codfilme: int,
     user_id: str = Depends(verificar_token),
     db: Session = Depends(get_db)
 ):
-    avals = db.query(models.Avaliacao).options(joinedload(models.Avaliacao.usuario)).all()
+    avals = (
+        db.query(models.Avaliacao)
+        .options(joinedload(models.Avaliacao.usuario))
+        .filter(models.Avaliacao.codfilme == codfilme)
+        .all()
+    )
+
+    if not avals:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Nenhuma avaliação encontrada para o filme {codfilme}."
+        )
+
     return avals
 
-@app.get("/avaliacoes/media")
+@app.get("/avaliacoes/media/{codfilme}")
 def media_notas(
-    codfilme: int,
+    codfilme: int,                         
     user_id: str = Depends(verificar_token),
     db: Session = Depends(get_db)
 ):
@@ -137,8 +148,10 @@ def media_notas(
         .filter(models.Avaliacao.codfilme == codfilme)
         .scalar()
     )
+
     if media is None:
         return {"mensagem": f"Nenhuma avaliação encontrada para o filme {codfilme}."}
+
     return {"media": float(round(media, 2))}
 
 # LOGOUT

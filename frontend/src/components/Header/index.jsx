@@ -6,7 +6,6 @@ import { useNavigate } from "react-router-dom";
 import useMoviesStore from "../../stores/moviesStore";
 import useUserStore from "../../stores/userStore";
 
-
 function Header() {
   const { moviesSearch, setMoviesSearch } = useMoviesStore();
   const { user, clearUser } = useUserStore();
