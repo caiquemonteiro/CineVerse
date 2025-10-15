@@ -101,7 +101,7 @@ def criar_avaliacao(
     current_user_id: int = Depends(verificar_token),
     db: Session = Depends(get_db)
 ):
-    obj = models.Avaliacao(
+    obj = models.Avaliacao(                    # Foi adicionando essa alteração
         codfilme=payload.codfilme,
         nota=payload.nota,
         comentario=payload.comentario,
