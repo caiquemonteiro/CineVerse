@@ -4,11 +4,11 @@ import { LogoutOutlined } from "@ant-design/icons";
 import logo from "../../assets/logo-horizontal.svg";
 import { useNavigate } from "react-router-dom";
 import useMoviesStore from "../../stores/moviesStore";
-import useUserStore from "../../stores/userStore";
+import useAuthStore from "../../stores/authStore";
 
 function Header() {
   const { moviesSearch, setMoviesSearch } = useMoviesStore();
-  const { user, clearUser } = useUserStore();
+  const { user } = useAuthStore();
   const navigate = useNavigate(); 
     
   const { Search } = Input;
