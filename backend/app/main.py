@@ -95,22 +95,29 @@ def usuario_atual(user_id: str = Depends(verificar_token), db: Session = Depends
 
 # AVALIAÇOES
 
-@app.post("/avaliacoes", response_model=schemas.AvaliacaoOut)
+@app.post("/avaliacoes", response_model=schemas.AvaliacaoOut, status_code=201)
 def criar_avaliacao(
     payload: schemas.AvaliacaoCreate,
-    user_id: str = Depends(verificar_token),
+    current_user_id: int = Depends(verificar_token),
     db: Session = Depends(get_db)
 ):
-    data = payload.model_dump()
-    data["data"] = date.today()
-    if not data.get("usuario_id"):
-        data["usuario_id"] = int(user_id)
+    obj = models.Avaliacao(
+        codfilme=payload.codfilme,
+        nota=payload.nota,
+        comentario=payload.comentario,
+        usuario_id=current_user_id, 
+        data=date.today(),
+    )
 
-    obj = models.Avaliacao(**data)
     try:
         db.add(obj)
         db.commit()
-        db.refresh(obj)
+        obj = (
+            db.query(models.Avaliacao)
+            .options(joinedload(models.Avaliacao.usuario))
+            .filter(models.Avaliacao.id == obj.id)
+            .one()
+        )
         return obj
     except Exception:
         db.rollback()
@@ -182,6 +189,7 @@ def logout(
         db.commit()
 
     return {"detail": "Logout efetuado. Este token foi revogado."}
+
 
 
 

@@ -21,7 +21,6 @@ if not SECRET_KEY:
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
 
 def criar_token_acesso(data: dict, minutos: int = ACCESS_TOKEN_EXPIRE_MINUTES) -> str:
-    """Gera JWT com expiração e JTI (para permitir logout/revogação)."""
     to_encode = data.copy()
     expire = datetime.utcnow() + timedelta(minutes=minutos)
     jti = str(uuid4())
@@ -29,15 +28,13 @@ def criar_token_acesso(data: dict, minutos: int = ACCESS_TOKEN_EXPIRE_MINUTES) -
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
 def _token_esta_revogado(jti: str) -> bool:
-    """Verifica se o token (pelo JTI) está na denylist."""
     db = SessionLocal()
     try:
         return db.query(models.TokenRevogado).filter(models.TokenRevogado.jti == jti).first() is not None
     finally:
         db.close()
 
-def verificar_token(token: str = Depends(oauth2_scheme)) -> str:
-    """Decodifica e valida o JWT; bloqueia tokens expirados ou revogados."""
+def verificar_token(token: str = Depends(oauth2_scheme)) -> int:
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         user_id = payload.get("sub")
@@ -48,7 +45,7 @@ def verificar_token(token: str = Depends(oauth2_scheme)) -> str:
         if _token_esta_revogado(jti):
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token revogado. Faça login novamente.")
 
-        return user_id
+        return int(user_id)
     except JWTError:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token expirado ou inválido")
 
