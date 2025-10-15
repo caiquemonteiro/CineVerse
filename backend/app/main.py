@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session, joinedload
 from typing import List
@@ -6,6 +6,10 @@ from datetime import date, datetime
 from jose import jwt
 from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
+from fastapi.security import OAuth2PasswordRequestForm
+from sqlalchemy import func
+from fastapi import status
+
 
 from .database import engine, SessionLocal
 from . import models, schemas
@@ -32,7 +36,7 @@ def get_db():
     finally:
         db.close()
 
-# Usuario
+# USUÁRIO
 
 @app.post("/usuarios", response_model=schemas.UsuarioOut)
 def criar_usuario(payload: schemas.UsuarioCreate, db: Session = Depends(get_db)):
@@ -42,7 +46,7 @@ def criar_usuario(payload: schemas.UsuarioCreate, db: Session = Depends(get_db))
 
     data = payload.model_dump()
     data["email"] = email_norm
-    data["senha"] = payload.senha
+    data["senha"] = payload.senha  # em produção, faça hash
 
     obj = models.Usuario(**data)
     try:
@@ -64,14 +68,14 @@ def listar_usuarios(db: Session = Depends(get_db)):
 # LOGIN
 
 @app.post("/login")
-def login(data: schemas.LoginRequest, db: Session = Depends(get_db)):
-    email = data.username
-    senha = data.password
+def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    email = str(form_data.username).strip().lower()
+    senha = form_data.password
 
     user = db.query(models.Usuario).filter(func.lower(models.Usuario.email) == email).first()
     if not user or senha != user.senha:
-        raise HTTPException(status_code=400, detail="E-mail ou senha inválidos.")
-    
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="E-mail ou senha inválidos.")
+
     token = criar_token_acesso(data={"sub": str(user.id)})
     return {
         "access_token": token,
@@ -81,36 +85,40 @@ def login(data: schemas.LoginRequest, db: Session = Depends(get_db)):
         "email": user.email
     }
 
-@app.get("/usuarios/me")
-def usuario_atual(user_id: str = Depends(verificar_token), db: Session = Depends(get_db)):
-    try:
-        uid = int(user_id)
-    except (TypeError, ValueError):
-        raise HTTPException(status_code=401, detail="Token inválido (sub não é numérico).")
 
-    usuario = db.query(models.Usuario).filter(models.Usuario.id == uid).first()
+@app.get("/usuarios/me")
+def usuario_atual(current_user_id: int = Depends(verificar_token), db: Session = Depends(get_db)):
+    usuario = db.query(models.Usuario).filter(models.Usuario.id == current_user_id).first()
     if not usuario:
         raise HTTPException(status_code=404, detail="Usuário não encontrado")
     return {"id": usuario.id, "nome": usuario.nome, "email": usuario.email}
 
-# AVALIAÇOES
+# AVALIAÇÕES
 
-@app.post("/avaliacoes", response_model=schemas.AvaliacaoOut)
+@app.post("/avaliacoes", response_model=schemas.AvaliacaoOut, status_code=201)
 def criar_avaliacao(
     payload: schemas.AvaliacaoCreate,
-    user_id: str = Depends(verificar_token),
+    current_user_id: int = Depends(verificar_token),
     db: Session = Depends(get_db)
 ):
-    data = payload.model_dump()
-    data["data"] = date.today()
-    if not data.get("usuario_id"):
-        data["usuario_id"] = int(user_id)
+    
+    obj = models.Avaliacao(
+        codfilme=payload.codfilme,
+        nota=payload.nota,
+        comentario=payload.comentario,
+        usuario_id=current_user_id, 
+        data=date.today(),
+    )
 
-    obj = models.Avaliacao(**data)
     try:
         db.add(obj)
         db.commit()
-        db.refresh(obj)
+        obj = (
+            db.query(models.Avaliacao)
+            .options(joinedload(models.Avaliacao.usuario))
+            .filter(models.Avaliacao.id == obj.id)
+            .one()
+        )
         return obj
     except Exception:
         db.rollback()
@@ -119,7 +127,7 @@ def criar_avaliacao(
 @app.get("/avaliacoes/{codfilme}", response_model=List[schemas.AvaliacaoOut])
 def listar_avaliacoes(
     codfilme: int,
-    user_id: str = Depends(verificar_token),
+    current_user_id: int = Depends(verificar_token),
     db: Session = Depends(get_db)
 ):
     avals = (
@@ -139,8 +147,8 @@ def listar_avaliacoes(
 
 @app.get("/avaliacoes/media/{codfilme}")
 def media_notas(
-    codfilme: int,                         
-    user_id: str = Depends(verificar_token),
+    codfilme: int,
+    current_user_id: int = Depends(verificar_token),
     db: Session = Depends(get_db)
 ):
     media = (
@@ -171,7 +179,6 @@ def logout(
     if not jti or not exp:
         return {"detail": "Token legado sem JTI/EXP. Faça login novamente para poder revogar."}
 
-
     if isinstance(exp, (int, float)):
         exp_dt = datetime.utcfromtimestamp(exp)
     else:
@@ -182,6 +189,7 @@ def logout(
         db.commit()
 
     return {"detail": "Logout efetuado. Este token foi revogado."}
+
 
 
 
