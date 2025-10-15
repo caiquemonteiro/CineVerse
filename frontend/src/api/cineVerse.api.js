@@ -19,7 +19,7 @@ export const criarUsuario = (usuarioData) => {
   });
 };
 
-export const loginUsuario = (loginData) => {
+export const login = (loginData) => {
   return fetch(`${BASE_URL}/login`, {
     method: "POST",
     headers,
@@ -27,25 +27,31 @@ export const loginUsuario = (loginData) => {
   });
 };
 
-
-export const getAvaliacoes = () => {
-  return fetch(`${BASE_URL}/avaliacoes`, {
+export const getAvaliacoes = (codfilme, token) => {
+  return fetch(`${BASE_URL}/avaliacoes/${codfilme}`, {
     method: "GET",
-    headers,
+    headers: {
+      ...headers,
+      Authorization: `Bearer ${token}`,
+    },
   });
 };
 
-export const criarAvaliacao = (avaliacaoData) => {
+export const criarAvaliacao = (avaliacaoData, token) => {
   return fetch(`${BASE_URL}/avaliacoes`, {
     method: "POST",
     headers,
+    Authorization: `Bearer ${token}`,
     body: JSON.stringify(avaliacaoData),
   });
 };
 
-export const getMediaAvaliacoes = () => {
-  return fetch(`${BASE_URL}/avaliacoes/media`, {
+export const getMediaAvaliacoes = (codfilme, token) => {
+  return fetch(`${BASE_URL}/avaliacoes/media/${codfilme}`, {
     method: "GET",
-    headers,
+    headers: {
+      ...headers,
+      Authorization: `Bearer ${token}`,
+    },
   });
 };

@@ -37,13 +37,14 @@ export default function MoviePage() {
       })
       .finally(() => setLoading(false))
     
-      getMovieCredits(id)
+    getMovieCredits(id)
       .then((res) => res.json())
       .then((json) => setCredits(json))
       .catch((err) => {
         console.error(err);
         messageApi.error('Não foi possível carregar os créditos do filme');
       })
+
   }, [id]);
 
   useEffect(() => {

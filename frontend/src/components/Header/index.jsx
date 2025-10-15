@@ -5,7 +5,6 @@ import logo from "../../assets/logo-horizontal.svg";
 import { useNavigate } from "react-router-dom";
 import useMoviesStore from "../../stores/moviesStore";
 
-
 function Header() {
   const { moviesSearch, setMoviesSearch } = useMoviesStore();
   const navigate = useNavigate(); 

@@ -3,6 +3,11 @@ from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 from typing import Optional
 from datetime import date
 
+# ========= LOGIN =========
+class LoginRequest(BaseModel):
+    username: str
+    password: str
+
 # ========= USUÁRIO =========
 
 class UsuarioCreate(BaseModel):
