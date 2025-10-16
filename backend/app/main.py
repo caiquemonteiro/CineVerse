@@ -126,7 +126,7 @@ def criar_avaliacao(
 @app.get("/avaliacoes/{codfilme}", response_model=List[schemas.AvaliacaoOut])
 def listar_avaliacoes(
     codfilme: int,
-    user_id: str = Depends(verificar_token),
+    current_user_id: int = Depends(verificar_token),
     db: Session = Depends(get_db)
 ):
     avals = (
@@ -135,19 +135,12 @@ def listar_avaliacoes(
         .filter(models.Avaliacao.codfilme == codfilme)
         .all()
     )
-
-    if not avals:
-        raise HTTPException(
-            status_code=404,
-            detail=f"Nenhuma avaliação encontrada para o filme {codfilme}."
-        )
-
     return avals
 
 @app.get("/avaliacoes/media/{codfilme}")
 def media_notas(
-    codfilme: int,                         
-    user_id: str = Depends(verificar_token),
+    codfilme: int,
+    current_user_id: int = Depends(verificar_token),
     db: Session = Depends(get_db)
 ):
     media = (
@@ -157,7 +150,7 @@ def media_notas(
     )
 
     if media is None:
-        return {"mensagem": f"Nenhuma avaliação encontrada para o filme {codfilme}."}
+        media = 0.0
 
     return {"media": float(round(media, 2))}
 

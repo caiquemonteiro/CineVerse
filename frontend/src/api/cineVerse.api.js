@@ -50,8 +50,10 @@ export const getAvaliacoes = (codfilme, token) => {
 export const criarAvaliacao = (avaliacaoData, token) => {
   return fetch(`${BASE_URL}/avaliacoes`, {
     method: "POST",
-    headers,
-    Authorization: `Bearer ${token}`,
+    headers: {
+      ...headers,
+      Authorization: `Bearer ${token}`,
+    },
     body: JSON.stringify(avaliacaoData),
   });
 };

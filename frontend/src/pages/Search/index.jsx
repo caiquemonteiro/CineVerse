@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 import { Row, Col, Breadcrumb, message, Empty } from "antd";
-import { HomeOutlined } from '@ant-design/icons';
+import { HomeOutlined, SearchOutlined } from '@ant-design/icons';
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/Header";
 import noImage from "../../assets/img-indisponivel.png";
@@ -47,6 +47,16 @@ export default function SearchPage() {
             ),
             href: "/home"
           },
+          {
+            title: (
+              <>
+                <SearchOutlined />
+                <span style={{ marginLeft: 8 }}>Resultado da Pesquisa</span>
+              </>
+            ),
+            href: "/home"
+          },
+          
         ]}
       />
 
@@ -73,7 +83,7 @@ export default function SearchPage() {
             ))}
           </Row>
         ) : (
-          
+           
           <div className="feedback-container">
             <Empty
               image={EMPTY_IMAGE_URL}
