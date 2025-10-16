@@ -27,6 +27,16 @@ export const login = (loginData) => {
   });
 };
 
+export const logout = (token) => {
+  return fetch(`${BASE_URL}/logout`, {
+    method: "POST",
+    headers: {
+      ...headers,
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
 export const getAvaliacoes = (codfilme, token) => {
   return fetch(`${BASE_URL}/avaliacoes/${codfilme}`, {
     method: "GET",

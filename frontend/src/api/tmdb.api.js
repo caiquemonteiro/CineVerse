@@ -15,6 +15,10 @@ export const getPopularMovies = () => {
   return fetch(`${TMDB_BASE_URL}/movie/popular?language=${LANG}&page=1`, options);
 }
 
+export const getTopRatedMovies = () => {
+  return fetch(`${TMDB_BASE_URL}/movie/top_rated?language=${LANG}&page=1`, options);
+}
+
 export const getMovieDetails = (movieId) => {
   return fetch(`${TMDB_BASE_URL}/movie/${movieId}?language=${LANG}`, options);
 }
