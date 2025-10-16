@@ -1,6 +1,6 @@
 import noImage from "../../assets/img-indisponivel.png";
 import { useParams } from "react-router-dom";
-import { Tag, Button, Spin, message, Breadcrumb, Divider } from "antd";
+import { Tag, Button, Spin, message, Breadcrumb} from "antd";
 import { useState, useEffect } from "react";
 import Header from "../../components/Header";
 import CineVerseHeart from "../../assets/cineVerseHeart.png";
@@ -15,6 +15,8 @@ import { getRatingBySource, getMovieRuntime, getMovieDescription } from "../../u
 import { IMAGE_BASE_URL, EMPTY_IMAGE_URL } from '../../utils/constants';
 import { getMovieOMDB } from "../../api/omdb.api";
 import MovieReviewModal from "../../components/MovieReviewModal/";
+import { getMediaAvaliacoes, getAvaliacoes } from "../../api/cineVerse.api";
+import useAuthStore from "../../stores/authStore";
 import "./movie.css";
 
 export default function MoviePage() {
@@ -26,14 +28,17 @@ export default function MoviePage() {
   const [imdbRate, setImdbRate] = useState(null);
   const [rottenTomatoesRate, setRottenTomatoesRate] = useState(null);
   const [metacriticRate, setMetacriticRate] = useState(null);
+  const [averageCineVerse, setAverageCineVerse] = useState(0);
+  const [reviews, setReviews] = useState([]);
+  const { user } = useAuthStore();
   
-  const { id } = useParams();
+  const { movieId } = useParams();
 
   const { Director, Writer, Actors, Ratings } = OMDBMovie;
 
   useEffect(() => {
     setLoading(true);
-    getMovieDetails(id)
+    getMovieDetails(movieId)
       .then((res) => res.json())
       .then((json) => setMovie(json))
       .catch((err) => {
@@ -41,7 +46,25 @@ export default function MoviePage() {
         messageApi.error('Não foi possível carregar os detalhes do filme');
       })
       .finally(() => setLoading(false))
-  }, [id]);
+    
+    getMediaAvaliacoes(movieId, user.access_token)
+      .then((res) => res.json())
+      .then((json) => setAverageCineVerse(json.media))
+      .catch((err) => {
+        console.error(err);
+        messageApi.error('Não foi possível carregar a media do filme');
+      })
+      .finally(() => setLoading(false))
+    
+    getAvaliacoes(movieId, user.access_token)
+      .then((res) => res.json()) 
+      .then((json) => setReviews(json))
+      .catch((err) => {
+        console.error(err);
+        messageApi.error('Não foi possível carregar as avaliações do filme');
+      })
+      .finally(() => setLoading(false))
+  }, [movieId]);
 
   useEffect(() => {
     if (movie && movie.imdb_id) {
@@ -122,7 +145,7 @@ export default function MoviePage() {
           <div className="movie-ratings">
             <div className="rate-item">
               <img src={CineVerseHeart} alt="CineVerse" />
-              <span className="heart-score"> {movie.vote_average?.toFixed(1)}<span className="max-score-cv">/10</span></span>
+              <span className="heart-score"> {averageCineVerse}<span className="max-score-cv">/10</span></span>
             </div>
             {imdbRate && <div className="rate-item">
               <img src={IMDbLogo} alt="IMDb" />
@@ -181,7 +204,7 @@ export default function MoviePage() {
            
           </div>
 
-          <ReviewComponent movieId={movie.id} />
+          <ReviewComponent reviews={reviews} />
         </div>
       </main>
     </div>
