@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session, joinedload
 from typing import List
@@ -6,6 +6,7 @@ from datetime import date, datetime
 from jose import jwt
 from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
+from fastapi.security import OAuth2PasswordRequestForm
 
 from .database import engine, SessionLocal
 from . import models, schemas
@@ -32,101 +33,88 @@ def get_db():
     finally:
         db.close()
 
-# Usuario
-
+# USUÁRIO 
 @app.post("/usuarios", response_model=schemas.UsuarioOut)
 def criar_usuario(payload: schemas.UsuarioCreate, db: Session = Depends(get_db)):
     email_norm = str(payload.email).strip().lower()
     if db.query(models.Usuario).filter(func.lower(models.Usuario.email) == email_norm).first():
         raise HTTPException(status_code=400, detail="E-mail já cadastrado.")
-
     data = payload.model_dump()
     data["email"] = email_norm
-    data["senha"] = payload.senha
-
+    data["senha"] = payload.senha  # em produção, faça hash
     obj = models.Usuario(**data)
     try:
-        db.add(obj)
-        db.commit()
-        db.refresh(obj)
+        db.add(obj); db.commit(); db.refresh(obj)
         return obj
     except IntegrityError:
-        db.rollback()
-        raise HTTPException(status_code=400, detail="E-mail já cadastrado.")
+        db.rollback(); raise HTTPException(status_code=400, detail="E-mail já cadastrado.")
     except Exception:
-        db.rollback()
-        raise HTTPException(status_code=500, detail="Erro ao salvar usuário.")
+        db.rollback(); raise HTTPException(status_code=500, detail="Erro ao salvar usuário.")
 
 @app.get("/usuarios", response_model=List[schemas.UsuarioOut])
 def listar_usuarios(db: Session = Depends(get_db)):
     return db.query(models.Usuario).all()
 
-# LOGIN
-
-@app.post("/login")
-def login(data: schemas.LoginRequest, db: Session = Depends(get_db)):
-    email = data.username
-    senha = data.password
-
-    user = db.query(models.Usuario).filter(func.lower(models.Usuario.email) == email).first()
-    if not user or senha != user.senha:
-        raise HTTPException(status_code=400, detail="E-mail ou senha inválidos.")
-    
-    token = criar_token_acesso(data={"sub": str(user.id)})
-    return {
-        "access_token": token,
-        "token_type": "bearer",
-        "usuario_id": user.id,
-        "nome": user.nome,
-        "email": user.email
-    }
-
 @app.get("/usuarios/me")
-def usuario_atual(user_id: str = Depends(verificar_token), db: Session = Depends(get_db)):
-    try:
-        uid = int(user_id)
-    except (TypeError, ValueError):
-        raise HTTPException(status_code=401, detail="Token inválido (sub não é numérico).")
-
-    usuario = db.query(models.Usuario).filter(models.Usuario.id == uid).first()
+def usuario_atual(current_user_id: int = Depends(verificar_token), db: Session = Depends(get_db)):
+    usuario = db.query(models.Usuario).filter(models.Usuario.id == current_user_id).first()
     if not usuario:
         raise HTTPException(status_code=404, detail="Usuário não encontrado")
     return {"id": usuario.id, "nome": usuario.nome, "email": usuario.email}
 
-# AVALIAÇOES
+# ========== LOGIN ==========
+# LOGIN (TESTE NO SWAGGER)
+@app.post("/login-swagger", summary="Login para Swagger (form-data)")
+def login_swagger(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    email = str(form_data.username).strip().lower()
+    senha = form_data.password
+    user = db.query(models.Usuario).filter(func.lower(models.Usuario.email) == email).first()
+    if not user or senha != user.senha:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="E-mail ou senha inválidos.")
+    token = criar_token_acesso(data={"sub": str(user.id)})
+    return {"access_token": token, "token_type": "bearer", "usuario_id": user.id, "nome": user.nome, "email": user.email}
 
+# LOGIN DO FRONT (JSON)
+@app.post("/login")  
+def login(data: schemas.LoginRequest, db: Session = Depends(get_db)):
+    email = data.username         
+    senha = data.password
+    user = db.query(models.Usuario).filter(func.lower(models.Usuario.email) == email).first()
+    if not user or senha != user.senha:
+        raise HTTPException(status_code=400, detail="E-mail ou senha inválidos.")
+    token = criar_token_acesso(data={"sub": str(user.id)})
+    return {"access_token": token, "token_type": "bearer", "usuario_id": user.id, "nome": user.nome, "email": user.email}
+
+# AVALIAÇÕES
 @app.post("/avaliacoes", response_model=schemas.AvaliacaoOut, status_code=201)
 def criar_avaliacao(
     payload: schemas.AvaliacaoCreate,
     current_user_id: int = Depends(verificar_token),
     db: Session = Depends(get_db)
 ):
-    obj = models.Avaliacao(                    # Foi adicionando essa alteração
+    obj = models.Avaliacao(
         codfilme=payload.codfilme,
         nota=payload.nota,
         comentario=payload.comentario,
-        usuario_id=current_user_id, 
+        usuario_id=current_user_id,
         data=date.today(),
     )
-
     try:
-        db.add(obj)
-        db.commit()
+        db.add(obj); db.commit()
         obj = (
             db.query(models.Avaliacao)
-            .options(joinedload(models.Avaliacao.usuario))
-            .filter(models.Avaliacao.id == obj.id)
-            .one()
+              .options(joinedload(models.Avaliacao.usuario))
+              .filter(models.Avaliacao.id == obj.id)
+              .one()
         )
         return obj
     except Exception:
-        db.rollback()
-        raise HTTPException(status_code=500, detail="Erro ao salvar avaliação.")
+        db.rollback(); raise HTTPException(status_code=500, detail="Erro ao salvar avaliação.")
 
 @app.get("/avaliacoes/{codfilme}", response_model=List[schemas.AvaliacaoOut])
 def listar_avaliacoes(
     codfilme: int,
-    user_id: str = Depends(verificar_token),
+    current_user_id: int = Depends(verificar_token),
     db: Session = Depends(get_db)
 ):
     avals = (
@@ -135,19 +123,14 @@ def listar_avaliacoes(
         .filter(models.Avaliacao.codfilme == codfilme)
         .all()
     )
-
     if not avals:
-        raise HTTPException(
-            status_code=404,
-            detail=f"Nenhuma avaliação encontrada para o filme {codfilme}."
-        )
-
+        raise HTTPException(status_code=404, detail=f"Nenhuma avaliação encontrada para o filme {codfilme}.")
     return avals
 
 @app.get("/avaliacoes/media/{codfilme}")
 def media_notas(
-    codfilme: int,                         
-    user_id: str = Depends(verificar_token),
+    codfilme: int,
+    current_user_id: int = Depends(verificar_token),
     db: Session = Depends(get_db)
 ):
     media = (
@@ -155,40 +138,25 @@ def media_notas(
         .filter(models.Avaliacao.codfilme == codfilme)
         .scalar()
     )
-
     if media is None:
         return {"mensagem": f"Nenhuma avaliação encontrada para o filme {codfilme}."}
-
     return {"media": float(round(media, 2))}
 
-# LOGOUT
-
+# LOGOUT 
 @app.post("/logout")
-def logout(
-    token: str = Depends(oauth2_scheme),
-    db: Session = Depends(get_db)
-):
+def logout(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
     except Exception:
         raise HTTPException(status_code=400, detail="Token inválido para logout.")
-
-    jti = payload.get("jti")
-    exp = payload.get("exp")
+    jti = payload.get("jti"); exp = payload.get("exp")
     if not jti or not exp:
         return {"detail": "Token legado sem JTI/EXP. Faça login novamente para poder revogar."}
-
-
-    if isinstance(exp, (int, float)):
-        exp_dt = datetime.utcfromtimestamp(exp)
-    else:
-        exp_dt = exp
-
+    exp_dt = datetime.utcfromtimestamp(exp) if isinstance(exp, (int, float)) else exp
     if not db.query(models.TokenRevogado).filter(models.TokenRevogado.jti == jti).first():
-        db.add(models.TokenRevogado(jti=jti, exp=exp_dt))
-        db.commit()
-
+        db.add(models.TokenRevogado(jti=jti, exp=exp_dt)); db.commit()
     return {"detail": "Logout efetuado. Este token foi revogado."}
+
 
 
 

@@ -47,7 +47,6 @@ class AvaliacaoOut(BaseModel):
     nota: float
     comentario: Optional[str] = None
     data: date
-    usuario_id: int
     usuario: Optional[UsuarioPublic] = None
     model_config = ConfigDict(from_attributes=True)
 
