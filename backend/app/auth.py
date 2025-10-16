@@ -18,7 +18,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 60))
 if not SECRET_KEY:
     raise RuntimeError("SECRET_KEY não definido no .env")
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login-swagger")
 
 def criar_token_acesso(data: dict, minutos: int = ACCESS_TOKEN_EXPIRE_MINUTES) -> str:
     to_encode = data.copy()
@@ -41,13 +41,12 @@ def verificar_token(token: str = Depends(oauth2_scheme)) -> int:
         jti = payload.get("jti")
         if not user_id or not jti:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token inválido")
-
         if _token_esta_revogado(jti):
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token revogado. Faça login novamente.")
-
         return int(user_id)
     except JWTError:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token expirado ou inválido")
+
 
 
 
