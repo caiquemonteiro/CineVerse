@@ -7,6 +7,43 @@
   margin: auto;
 }
 
+.movie-ratings {
+  font-size: 16px;
+  margin-top: 25px;
+  align-items: center;
+}
+
+.rate-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 0;
+}
+
+.rate-item:not(:last-child) {
+  border-bottom: 1px solid #333;
+}
+
+.heart-score {
+  font-size: 28px;
+  font-weight: bold;
+  color: #d32f2f;
+  background-image: linear-gradient(to top, #ff0844 0%, #ffb199 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.max-score-cv {
+  font-size: 16px;
+  font-weight: lighter;
+}
+
+.max-score {
+  font-size: 12px;
+  color: #AAAAAA;
+}
+
 .movie-details {
   flex: 1;
 }
@@ -33,37 +70,25 @@
   color: #FFFFFF; 
 }
 
+.movie-info-item {
+  color: lightgray;
+}
+
+.movie-info-item > strong {
+  color: white;
+}
+
 .genre-tag {
   border: 1px solid #FF3B30 !important;
   color: #FF3B30 !important;
   background: transparent !important;
 }
 
-.ratings {
-  display: flex;
-  gap: 20px;
-  font-size: 16px;
-  margin-top: 25px;
-  align-items: center;
-}
-
-.heart-score {
-  font-family: 'Roboto', sans-serif;
-  font-size: 20px;
-  color: #FFFFFF;
-}
-
-.imdb-score {
-  font-family: 'Roboto', sans-serif;
-  font-size: 20px;
-  color: #FFFFFF;
-}
-
 .reviews-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 30px 0 10px;
+  margin: 60px 0 20px;
 }
 
 .review-button {

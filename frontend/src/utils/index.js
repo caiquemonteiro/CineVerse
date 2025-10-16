@@ -1,16 +1,6 @@
-export const getReleaseYear = (releaseDate) => {
-  return releaseDate.split("-")[0];
-}
-
 export const getMovieDescription = (description) => {
   if (!description) return "Sem descrição disponível.";
   return description;
-}
-
-export const getMovieDirector = (movieCredits) => {
-  if (!movieCredits || !movieCredits.crew) return "Desconhecido";
-  const director = movieCredits.crew.find(person => person.job === "Director");
-  return director ? director.name : "Desconhecido";
 }
 
 export const getMovieRuntime = (runtime) => {
@@ -22,7 +12,9 @@ export const getMovieRuntime = (runtime) => {
 
 export const getRatingBySource = (ratings, source) => {
   const rating = ratings?.find((r) => r.Source === source);
-  return rating ? rating.Value : "N/A";
+  if (!rating) return false;
+  const value = rating.Value.split('/')[0].trim();
+  return value;
 }
 
 export const formatDateTime = (dateTimeString) => {

@@ -123,8 +123,6 @@ def listar_avaliacoes(
         .filter(models.Avaliacao.codfilme == codfilme)
         .all()
     )
-    if not avals:
-        raise HTTPException(status_code=404, detail=f"Nenhuma avaliação encontrada para o filme {codfilme}.")
     return avals
 
 @app.get("/avaliacoes/media/{codfilme}")
@@ -139,7 +137,8 @@ def media_notas(
         .scalar()
     )
     if media is None:
-        return {"mensagem": f"Nenhuma avaliação encontrada para o filme {codfilme}."}
+        media = 0.0
+
     return {"media": float(round(media, 2))}
 
 # LOGOUT 
