@@ -1,30 +1,35 @@
 import noImage from "../../assets/img-indisponivel.png";
 import { useParams } from "react-router-dom";
-import { Tag, Button, Input, Spin, message, Breadcrumb } from "antd";
+import { Tag, Button, Spin, message, Breadcrumb, Divider } from "antd";
 import { useState, useEffect } from "react";
 import Header from "../../components/Header";
-import metacriticLogo from "../../assets/metacritic.png";
-import rotten_tomatoesLogo from "../../assets/rottenTomatoes.png";
+import CineVerseHeart from "../../assets/cineVerseHeart.png";
 import IMDbLogo from "../../assets/imdb.png";
+import rotten_tomatoesLogo from "../../assets/rottenTomatoes.png";
+import metacriticLogo from "../../assets/metacritic.png";
 import ReviewComponent from "../../components/Review";
-import { EditOutlined, HeartFilled } from "@ant-design/icons";
+import { EditOutlined } from "@ant-design/icons";
 import { HomeOutlined, VideoCameraOutlined } from '@ant-design/icons';
-import { getMovieDetails, getMovieCredits } from "../../api/tmdb.api";
-import { getReleaseYear, getMovieDirector, getRatingBySource, getMovieRuntime, getMovieDescription } from "../../utils" 
-import { getMovieRatings } from "../../api/omdb.api";
+import { getMovieDetails } from "../../api/tmdb.api";
+import { getRatingBySource, getMovieRuntime, getMovieDescription } from "../../utils"
+import { IMAGE_BASE_URL, EMPTY_IMAGE_URL } from '../../utils/constants';
+import { getMovieOMDB } from "../../api/omdb.api";
 import MovieReviewModal from "../../components/MovieReviewModal/";
 import "./movie.css";
 
 export default function MoviePage() {
   const [messageApi, contextHolder] = message.useMessage();
   const [movie, setMovie] = useState(null);
-  const [credits, setCredits] = useState([]);
-  const [ratings, setRatings] = useState([]);
+  const [OMDBMovie, setOMDBMovie] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [imdbRate, setImdbRate] = useState(null);
+  const [rottenTomatoesRate, setRottenTomatoesRate] = useState(null);
+  const [metacriticRate, setMetacriticRate] = useState(null);
   
   const { id } = useParams();
-  const { TextArea } = Input;
+
+  const { Director, Writer, Actors, Ratings } = OMDBMovie;
 
   useEffect(() => {
     setLoading(true);
@@ -36,44 +41,42 @@ export default function MoviePage() {
         messageApi.error('Não foi possível carregar os detalhes do filme');
       })
       .finally(() => setLoading(false))
-    
-    getMovieCredits(id)
-      .then((res) => res.json())
-      .then((json) => setCredits(json))
-      .catch((err) => {
-        console.error(err);
-        messageApi.error('Não foi possível carregar os créditos do filme');
-      })
-
   }, [id]);
 
   useEffect(() => {
     if (movie && movie.imdb_id) {
-      getMovieRatings(movie.imdb_id)
+      getMovieOMDB(movie.imdb_id)
         .then((res) => res.json())
-        .then((json) => setRatings(json.Ratings))
+        .then((json) => setOMDBMovie(json))
         .catch((err) => {
           console.error(err);
-          messageApi.error('Não foi possível carregar as notas do filme');
+          messageApi.error('Não foi possível acessar o filme no OMDB');
         })
     }
   }, [movie]);
 
+  useEffect(() => {
+    if (Ratings) {
+      setImdbRate(getRatingBySource(Ratings, "Internet Movie Database"));
+      setRottenTomatoesRate(getRatingBySource(Ratings, "Rotten Tomatoes"));
+      setMetacriticRate(getRatingBySource(Ratings, "Metacritic"));
+    }
+  }, [Ratings]);
+
   if (loading)
     return <Spin size="large" style={{ display: "block", margin: "50px auto" }} />;
-  console.log(movie)
   if (movie.success === false) 
     
   return (
     <div className="movie-not-found">
       <Empty
-            image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
-            styles={{ image: { height: 60, marginTop: 30 } }}
-            description={
-              <span className="empty-description">
-                Filme não encontrado
-              </span>
-            }
+        image={EMPTY_IMAGE_URL}
+        styles={{ image: { height: 60, marginTop: 30 } }}
+        description={
+          <span className="empty-description">
+            Filme não encontrado
+          </span>
+        }
       />
     </div>
   );
@@ -110,46 +113,52 @@ export default function MoviePage() {
       />
 
       <main className="movie-content">
-        <img
-          className="movie"
-          src={
-            movie.poster_path
-              ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
-              : noImage
-          }
-          alt={movie.title}
-        />
+        <div>
+          <img
+            className="movie"
+            src={movie.poster_path ? `${IMAGE_BASE_URL}${movie.poster_path}` : noImage}
+            alt={movie.title}
+          />
+          <div className="movie-ratings">
+            <div className="rate-item">
+              <img src={CineVerseHeart} alt="CineVerse" />
+              <span className="heart-score"> {movie.vote_average?.toFixed(1)}<span className="max-score-cv">/10</span></span>
+            </div>
+            {imdbRate && <div className="rate-item">
+              <img src={IMDbLogo} alt="IMDb" />
+              <span className="imdb-score">{imdbRate}<span className="max-score">/10</span></span>
+            </div>}
+            {rottenTomatoesRate && <div className="rate-item">
+              <img src={rotten_tomatoesLogo} alt="Rotten Tomatoes" />
+              <span className="rotten_tomatoes-score">{rottenTomatoesRate}</span>
+            </div>}
+            {metacriticRate && <div className="rate-item">
+              <img src={metacriticLogo} alt="Metacritic" />
+              <span className="metacritic-score">{metacriticRate}<span className="max-score">/100</span></span>
+            </div>}
+          </div>
+        </div>
 
         <div className="movie-details">
           <h1 className="movie-title">
-            {movie.title} {movie.release_date && <span className="movie-year">({getReleaseYear(movie.release_date)})</span>}
+            {movie.title} {movie.release_date && <span className="movie-year">({OMDBMovie.Year})</span>}
           </h1>
 
           <p className="description">{getMovieDescription(movie.overview)}</p>
 
-          <p><strong>Diretor:</strong> {getMovieDirector(credits)}</p>
+          <p className="movie-info-item"><strong>Diretor:</strong> {Director}</p>
 
-          <p><strong>Duração:</strong> {getMovieRuntime(movie.runtime)}</p>
+          <p className="movie-info-item"><strong>Roteirista:</strong> {Writer}</p>
+
+          <p className="movie-info-item"><strong>Atores:</strong> {Actors}</p>
+
+          <p className="movie-info-item"><strong>Duração:</strong> {getMovieRuntime(movie.runtime)}</p>
 
           {movie.genres && movie.genres.map((genre) => (
             <Tag key={genre.id} className="genre-tag">
               {genre.name}
             </Tag>
           ))}
-
-          <div className="ratings">
-            <HeartFilled style={{ color: "#CF1322", fontSize: 35, marginRight: 4 }} />
-            <span className="heart-score"> {movie.vote_average?.toFixed(1)}</span>
-
-            <img src={IMDbLogo} alt="IMDb" style={{ width: "40px", height: "auto" }} />
-            <span className="imdb-score">{getRatingBySource(ratings, "Internet Movie Database")}</span>
-
-            <img src={metacriticLogo} alt="Metacritic" style={{ width: "40px", height: "auto" }} />
-            <span className="metacritic-score">{getRatingBySource(ratings, "Metacritic")}</span>
-
-            <img src={rotten_tomatoesLogo} alt="Rotten Tomatoes" style={{ width: "40px", height: "auto" }} />
-            <span className="rotten_tomatoes-score">{getRatingBySource(ratings, "Rotten Tomatoes")}</span>
-          </div>
 
           <div className="reviews-header">
             <h2>Avaliações</h2>
@@ -168,8 +177,7 @@ export default function MoviePage() {
               onSubmit={({ rating, comment }) => {
                 console.log("Avaliação enviada:", { movieId: movie.id, rating, comment });
               }}
-              />
-
+            />
            
           </div>
 

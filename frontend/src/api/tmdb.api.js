@@ -19,10 +19,6 @@ export const getMovieDetails = (movieId) => {
   return fetch(`${TMDB_BASE_URL}/movie/${movieId}?language=${LANG}`, options);
 }
 
-export const getMovieCredits = (movieId) => {
-  return fetch(`${TMDB_BASE_URL}/movie/${movieId}/credits?language=${LANG}`, options);
-}
-
 export const getMovieReviews = (movieId) => {
   return fetch(`${TMDB_BASE_URL}/movie/${movieId}/reviews?language=${LANG}&page=1`, options);
 }

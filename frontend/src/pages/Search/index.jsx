@@ -4,9 +4,10 @@ import { HomeOutlined } from '@ant-design/icons';
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/Header";
 import noImage from "../../assets/img-indisponivel.png";
-import "./search.css";
 import { useEffect, useState } from "react";
 import { getSearchMovies } from "../../api/tmdb.api";
+import { IMAGE_BASE_URL, EMPTY_IMAGE_URL } from '../../utils/constants';
+import "./search.css";
 
 export default function SearchPage() {
   const [ movies, setMovies] = useState([]);
@@ -62,7 +63,7 @@ export default function SearchPage() {
                 <img
                   className="movie-search"
                   src={movie.poster_path
-                    ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+                    ? `${IMAGE_BASE_URL}${movie.poster_path}`
                     : noImage}
                   onClick={( ) => navigate(`/movie/${movie.id}`)}
                   onError={(e) => (e.target.src = noImage)}
@@ -75,13 +76,13 @@ export default function SearchPage() {
           
           <div className="feedback-container">
             <Empty
-                  image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
-                  styles={{ image: { height: 60, marginTop: 30 } }}
-                  description={
-                    <span className="empty-description">
-                      Nenhum filme encontrado para "{search}"
-                    </span>
-                  }
+              image={EMPTY_IMAGE_URL}
+              styles={{ image: { height: 60, marginTop: 30 } }}
+              description={
+                <span className="empty-description">
+                  Nenhum filme encontrado para "{search}"
+                </span>
+              }
             />
           </div>
 

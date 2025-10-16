@@ -1,10 +1,10 @@
-import { Form, Input, Button, Typography } from "antd";
+import { Form, Input, Button, Typography, message } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
-import "./login.css";
 import logo from "../../assets/logo.svg";
 import { useNavigate } from "react-router-dom";
 import { login } from "../../api/cineVerse.api";
 import useAuthStore from "../../stores/authStore";
+import "./login.css";
 
 const { Text } = Typography;
 
@@ -12,21 +12,29 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const { setUser } = useAuthStore();
 
+  const [messageApi, contextHolder] = message.useMessage();
+
   const onLogin =  (values) => {
     login(values)
-      .then((res) => res.json())
-      .then((json) => {
-        setUser(json);
-        navigate('/home');
-      })
-      .catch((err) => {
-        console.error(err);
-        messageApi.error('Erro ao fazer login.');
-      });
+        .then((res) => {
+          if (!res.ok) {
+            return res.json().then((err) => { throw new Error(err.detail || 'Erro ao fazer login.'); });
+          }
+          return res.json();
+        })
+        .then((json) => {
+          setUser(json);
+          navigate('/home');
+        })
+        .catch((err) => {
+          console.error(err);
+          messageApi.error(err.message || 'Erro ao fazer login.');
+        });
   }
 
   return (
     <article className="login-container">
+      { contextHolder }
       <section className="login-box">
 
         <img src={logo} alt="CineVerse Logo" className="login-logo" />
