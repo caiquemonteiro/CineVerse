@@ -6,37 +6,30 @@ import CineVerseHeart from '../../assets/cineVerseHeart.png';
 import ReactMarkdown from 'react-markdown';
 import './review.css';
 
+
 const ReviewComponent = ({ reviews = [] }) => {
-  
   return (
     <div className="reviews">
-      
       {reviews.map((review, index) => (
-          
         <div key={index} className="review-card">
-          
           <div className="review-header">
-            
-            <Avatar src={`${IMAGE_BASE_URL}${review.author_details.avatar_path}`} />
-
+            <Avatar className="user-avatar">
+              {review.usuario?.nome?.charAt(0).toUpperCase() || "?"}
+            </Avatar>
             <div className="user-infor">
-              <div>{review.author}</div>
-              <div className="review-date">{formatDateTime(review.created_at)}</div>
+              <div>{review.usuario?.nome}</div>
+              <div className="review-date">{formatDateTime(review.data)}</div>
             </div>
-
-            <div className="rating-badge">
+            <span className="rating-value">
               <img src={CineVerseHeart} alt="Nota CineVerse" style={{ height: 24 }} />
-              <span className="rating-value">{review.author_details.rating}</span>
-            </div>
-
+              {review.nota ?? "-"}
+            </span>
           </div>
-
-          {review.content && (
+          {review.comentario && (
             <div className="review-comment">
-              <ReactMarkdown>{review.content}</ReactMarkdown>
+              <ReactMarkdown>{review.comentario}</ReactMarkdown>
             </div>
           )}
-
         </div>
       ))}
     </div>
