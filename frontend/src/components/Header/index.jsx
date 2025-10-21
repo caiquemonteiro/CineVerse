@@ -29,6 +29,7 @@ function Header() {
     logout(user.access_token)
       .then((res) => res.json())
       .then(() => {
+        setMoviesSearch('');
         navigate('/');
         clearUser();
       })
